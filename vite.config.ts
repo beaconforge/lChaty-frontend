@@ -8,10 +8,13 @@ export default defineConfig(({ mode }) => {
   const KEY_PATH = env.DEV_KEY_PATH || './certs/local.lchaty.com+1-key.pem';
   const BACKEND_PROXY = env.VITE_BACKEND_API_PROXY || 'https://chat-backend.lchaty.com';
   const WORKER_PROXY = env.VITE_WORKER_API_PROXY || 'https://chat-backend.lchaty.com';
-
   const https = (fs.existsSync(CERT_PATH) && fs.existsSync(KEY_PATH))
     ? { cert: fs.readFileSync(CERT_PATH), key: fs.readFileSync(KEY_PATH) }
     : undefined;
+
+  // HMR should connect to the browser-visible host so the client websocket
+  // connects to wss://local.lchaty.com:5173 when using portproxy.
+  const HMR_SERVER_HOST = 'local.lchaty.com';
 
   return {
     resolve: { alias: { '@': resolve(__dirname, 'src') } },
@@ -20,6 +23,16 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: 5173,
       strictPort: true,
+      // Configure HMR so the client connects to the browser-visible origin.
+      // When we use a portproxy (127.0.0.1:5173 -> localhost:5175) the dev server
+      // may actually run on a different local port, so force the HMR client to
+      // connect to the public-facing host/port (local.lchaty.com:5173).
+      hmr: {
+        protocol: https ? 'wss' : 'ws',
+        host: HMR_SERVER_HOST,
+        port: 5173,
+        clientPort: 5173
+      },
       proxy: {
         '/api/auth': {
           target: WORKER_PROXY,

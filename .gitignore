@@ -31,3 +31,28 @@ dist/
 .env
 .env.*
 /frontend_Back/
+
+# Ignore various runtime logs, previews and temp artifacts
+*.log
+*.log.*
+preview-*.log
+http-frontend.log
+playwright-*.log
+npm-ls-*.log
+openssl-*.log
+cert-gen.log
+
+# Artifacts and temporary outputs
+artifacts/
+tmp/
+test-results/
+test-results/**
+playwright-report/
+
+# Snapshot screenshots and temporary pages
+page-snap-*.png
+*.webm
+
+# local debug files
+mod.txt
+probe-after-start.txt

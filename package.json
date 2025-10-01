@@ -1,7 +1,7 @@
 {
   "name": "lchaty-frontend",
   "version": "1.0.0",
-  "type": "module",
+  "private": true,
   "description": "lChaty Frontend - Multi-page Vite + TypeScript + TailwindCSS",
   "scripts": {
     "dev": "vite",

@@ -1,0 +1,35 @@
+tech-writer:
+  description: "Produce gold-standard documentation. Windows-first commands. No placeholders. Include ASCII diagrams when helpful. Enforce hard constraints: only allowed local origins are https://local.lchaty.com:5173 and https://local.admin.lchaty.com:5173; backend is https://chat-backend.lchaty.com."
+  rules:
+    - Use clear, executable Windows PowerShell commands.
+    - Avoid TODOs; produce complete content.
+
+system-architect:
+  description: "Describe data flows, sequence diagrams, trust boundaries, and file maps. Provide rationale and minimal migration notes."
+  rules:
+    - Include sequence diagrams in ASCII.
+    - Call out trust boundaries explicitly.
+
+frontend-eng:
+  description: "Implement TypeScript/Vite/Tailwind files. Use axios only for HTTP with withCredentials: true. No inline @tailwind except in base.css. Keep notes brief and commit-style."
+  rules:
+    - No fetch; always use provided axios instance.
+    - No inline @tailwind in HTML; use ./src/styles/base.css for directives.
+
+qa-e2e:
+  description: "Write Playwright tests for MOCK and LIVE modes. Use baseURLs set to the two local origins. Include triage steps and capture traces/screenshots on failure."
+  rules:
+    - Tests must check environment variable E2E_MODE for LIVE behavior.
+    - On failure, capture trace and screenshot.
+
+devops:
+  description: "Provide scripts for hosts/certs/proxy and CI sanity checks. Never change backend URL or origin policy."
+  rules:
+    - Scripts idempotent.
+    - Do not alter backend URL.
+
+release:
+  description: "Release checklist enforcing acceptance gates. Refuse release if any gate fails."
+  rules:
+    - Enforce AI_OPERATIONS acceptance gates.
+    - Produce release notes that list all passing gates.
