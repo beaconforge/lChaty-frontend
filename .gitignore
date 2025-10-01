@@ -1,4 +1,30 @@
-﻿node_modules/
+﻿# Node
+/frontend/node_modules/
+/node_modules/
+
+# Vite / build
+/frontend/dist/
+
+# Certs, keys and pfxs
+/certs/
+/local.lchaty.com.pfx
+/local.lchaty.com.*.pfx
+
+# Playwright artifacts
+/frontend/playwright-report/
+/frontend/test-results/
+
+# Editor
+.vscode/
+.idea/
+# Ignore development certificates and private keys
+certs/*.key
+certs/*.pfx
+
+# Optional: ignore other cert artifacts
+certs/*.pem
+certs/*.cer
+node_modules/
 dist/
 *.pem
 *.key
