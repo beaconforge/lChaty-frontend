@@ -1,0 +1,11 @@
+:root {
+  --lchaty-accent: #0b5fff; /* blue-600 */
+  --lchaty-accent-600: #0b5fff;
+  --lchaty-bg: #ffffff;
+  --lchaty-fg: #0f172a;
+  --lchaty-muted: #6b7280;
+  --lchaty-border: #e6eef8;
+}
+
+.btn-primary { background: var(--lchaty-accent-600); color: white; }
+.text-muted { color: var(--lchaty-muted); }

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>lChaty — User</title>
+    <link rel="stylesheet" href="/src/styles/base.css">
+    <link rel="stylesheet" href="/src/styles/theme.css">
+  </head>
+  <body class="antialiased bg-white text-slate-900">
+    <!-- Minimal persistent header for navigation and reliable tests -->
+    <header class="w-full border-b bg-white sticky top-0 z-40">
+      <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img src="/assets/lchaty-logo.svg" alt="lChaty" class="h-6 w-6 object-contain" />
+          <span class="font-semibold">lChaty</span>
+        </div>
+        <nav aria-label="main navigation">
+          <a class="text-sm text-slate-500 ml-4" href="/">Home</a>
+        </nav>
+      </div>
+    </header>
+
+  <!-- Visible H1 used by visual tests and accessibility -->
+  <h1 id="site-h1" class="lchaty-test-h1">Foundation. Innovation. Connection.</h1>
+
+    <main id="app" class="min-h-screen p-6">
+      <div id="app-root">Loading user app...</div>
+    </main>
+
+    <!-- Beta access floating button (kept minimal) -->
+    <button id="beta-access-button" class="fixed bottom-6 right-6 z-30 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">Beta</button>
+
+    <script type="module" src="/src/app/user/main.user.ts"></script>
+  </body>
+</html>
