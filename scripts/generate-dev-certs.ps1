@@ -2,7 +2,8 @@ param(
   [string]$OutDir = './certs',
   [string]$PfxPassword = 'changeit',
   [string[]]$DnsNames = @('local.lchaty.com','local.admin.lchaty.com'),
-  [int]$ValidYears = 2
+  [int]$ValidYears = 2,
+  [switch]$Approved = $false
 )
 
 # -----------------------------------------------------------------------------
@@ -14,6 +15,12 @@ param(
 # manually by an authorized person and accompanied by an approval record.
 # See ../docs/CERT_POLICY_SNIPPET.md for the canonical policy and audit steps.
 # -----------------------------------------------------------------------------
+
+# Guard: require explicit approval via -Approved switch or environment variable
+if (-not $Approved -and $env:CERT_OP_APPROVED -ne '1') {
+  Write-Error "[SECURITY] Certificate operations are guarded. Provide -Approved or set CERT_OP_APPROVED=1 in the environment after obtaining explicit approval. Aborting."
+  exit 2
+}
 
 # Ensure output directory exists
 if (-not (Test-Path -Path $OutDir)) { New-Item -ItemType Directory -Path $OutDir | Out-Null }
