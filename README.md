@@ -2,6 +2,14 @@
 
 See `docs/DEV_SETUP.md` for full setup. Quick steps:
 
+> IMPORTANT - CERTIFICATE & SECURITY POLICY:
+>
+> - Do NOT create, modify, delete, or trust certificates, keys, or the system certificate store unless you have explicit written approval from the project owner.
+> - Certificate operations are high-risk and must be coordinated as a separate, auditable change.
+>
+> See `docs/CERT_POLICY_SNIPPET.md` for the canonical policy.
+
+
 1) Add hosts and generate certs (Admin PowerShell):
    ./scripts/setup-hosts-and-proxy.ps1 -Action add
    ./scripts/generate-dev-certs.ps1 -OutDir ./certs -PfxName local.lchaty.com.pfx -Force
