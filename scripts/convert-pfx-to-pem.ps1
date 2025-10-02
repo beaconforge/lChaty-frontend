@@ -1,7 +1,8 @@
 param(
   [Parameter(Mandatory=$true)] [string]$PfxPath,
   [string]$OutDir = './certs',
-  [string]$Password = 'changeit'
+  [string]$Password = 'changeit',
+  [switch]$Approved = $false
 )
 
 # -----------------------------------------------------------------------------
@@ -14,9 +15,6 @@ param(
 # -----------------------------------------------------------------------------
 
 # Require explicit approval via environment variable or -Approved switch
-param(
-  [switch]$Approved = $false
-)
 
 if (-not $Approved -and $env:CERT_OP_APPROVED -ne '1') {
   Write-Error "[SECURITY] Certificate conversion is guarded. Provide -Approved or set CERT_OP_APPROVED=1 in the environment after explicit approval. Aborting."

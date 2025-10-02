@@ -1,13 +1,18 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import { readFileSync } from 'fs'
 
 export default defineConfig({
-  // Simple development server - HTTP only for now
+  // HTTP development server temporarily for testing
   server: {
-    host: 'localhost',
-    port: 3000,
+    host: '0.0.0.0', // Accept connections on all interfaces
+    port: 5173,
     strictPort: true,
-    open: true // Auto-open browser
+    // Temporarily disable HTTPS to test basic connectivity
+    // https: {
+    //   key: readFileSync(resolve(__dirname, 'certs/local.lchaty.com+1-key.pem')),
+    //   cert: readFileSync(resolve(__dirname, 'certs/local.lchaty.com+1.pem'))
+    // }
   },
 
   // Path resolution for imports
