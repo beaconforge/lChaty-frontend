@@ -3,79 +3,112 @@
  */
 
 import { userApi, User } from '@/services/api.user';
-import { LoginPage } from './pages/LoginPage';
+import { authService } from '@/services/auth';
+import { errorService, ErrorBoundary } from '@/services/error';
+import { loadingService } from '@/services/loading';
+import { Header } from '../../components/Header';
+import { Login } from '../../pages/Login';
+import { ThemeManager } from '../../lib/theme';
 import { ChatPage } from './pages/ChatPage';
+
+console.log('Main user app loaded');
 
 class UserApp {
   private container: HTMLElement;
   private currentUser: User | null = null;
   private currentPage: 'login' | 'chat' = 'login'; // Tracks current page for navigation
+  private currentLogin?: Login;
 
   constructor() {
     this.container = document.getElementById('app')!;
     if (!this.container) {
       throw new Error('App container not found');
     }
+    
+    // Initialize enhanced services
+    ThemeManager.init();
+    this.setupErrorBoundary();
+    this.setupAuthSubscription();
+  }
+
+  private setupErrorBoundary(): void {
+    // Set up global error boundary for the application
+    new ErrorBoundary(this.container);
+  }
+
+  private setupAuthSubscription(): void {
+    authService.subscribe((authState) => {
+      if (authState.isAuthenticated && authState.user) {
+        this.currentUser = authState.user;
+        if (this.currentPage === 'login') {
+          this.showChatPage();
+        }
+      } else if (!authState.isAuthenticated) {
+        this.currentUser = null;
+        if (this.currentPage === 'chat') {
+          this.showLoginPage();
+        }
+      }
+    });
   }
 
   async init() {
     try {
-      // Show loading state
-      this.showLoading();
+      // Ensure something is visible immediately while we initialise auth
+      // so the page doesn't remain a white/blank screen while backend
+      // auth checks (which may return 401) complete.
+      this.showLoginPage();
+      loadingService.start('app-init');
       
-      // Check if user is already authenticated
-      await this.checkAuth();
+      // Initialize authentication
+      await authService.init();
       
-      // Route to appropriate page
-      if (this.currentUser) {
-        this.showChatPage();
-      } else {
-        this.showLoginPage();
-      }
+      loadingService.success('app-init');
     } catch (error) {
       console.error('Failed to initialize app:', error);
+      errorService.handleApiError(error, 'app-init');
+      loadingService.error('app-init', 'Failed to initialize application');
+      
+      // Show login page as fallback
       this.showLoginPage();
     }
   }
 
-  private async checkAuth(): Promise<void> {
-    try {
-      this.currentUser = await userApi.getMe();
-    } catch (error: any) {
-      // Not authenticated or network error
-      this.currentUser = null;
-      if (error.status !== 401) {
-        console.warn('Auth check failed:', error.message);
-      }
-    }
-  }
 
-  private showLoading(): void {
-    this.container.innerHTML = `
-      <div class="min-h-screen flex items-center justify-center">
-        <div class="text-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p class="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    `;
-  }
 
   private showLoginPage(): void {
     this.currentPage = 'login';
-    const loginPage = new LoginPage(this.container);
     
-    loginPage.onLogin = async (credentials) => {
-      try {
-        await userApi.login(credentials);
-        this.currentUser = await userApi.getMe();
-        this.showChatPage();
-      } catch (error: any) {
-        loginPage.showError(error.message || 'Login failed');
-      }
+    // Cleanup previous login if exists
+    if (this.currentLogin) {
+      this.currentLogin.destroy();
+    }
+    
+    // Clear container and create header + login
+    this.container.innerHTML = '';
+    
+    // Create header container
+    const headerContainer = document.createElement('div');
+    this.container.appendChild(headerContainer);
+    
+    // Create main content container  
+    const mainContainer = document.createElement('div');
+    this.container.appendChild(mainContainer);
+    
+    // Render header
+    const header = new Header(headerContainer);
+    header.render();
+    
+    // Render enhanced login page
+    this.currentLogin = new Login(mainContainer);
+    
+    // The auth service handles login automatically, but we can provide additional success handling
+    this.currentLogin.onLogin = async () => {
+      // Additional success handling if needed
+      console.log('Login successful via auth service');
     };
 
-    loginPage.render();
+    this.currentLogin.render();
   }
 
   private showChatPage(): void {
@@ -85,6 +118,10 @@ class UserApp {
     }
 
     this.currentPage = 'chat';
+    
+    // Clear container before rendering chat page
+    this.container.innerHTML = '';
+    
     const chatPage = new ChatPage(this.container, this.currentUser);
     
     chatPage.onLogout = async () => {

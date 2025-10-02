@@ -46,4 +46,9 @@ if ($Https) {
   & (Join-Path $scriptDir 'start-vite.ps1') -Port $Port -ForceBackendIP $ForceBackendIP -ForceHttp:$ForceHttp
 }
 
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "start-vite reported an issue (exit code $LASTEXITCODE). Server may not have started properly." -ForegroundColor Red
+    exit $LASTEXITCODE
+}
+
 Write-Host "Orchestration complete." -ForegroundColor Green

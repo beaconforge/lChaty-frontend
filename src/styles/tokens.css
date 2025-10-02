@@ -1,0 +1,15 @@
+:root {
+  --lchaty-accent-600: #0b5fff; /* primary blue */
+  --lchaty-accent-500: #2563eb; /* hover */
+  --lchaty-fg: #0f172a;         /* body text */
+  --lchaty-muted: #6b7280;      /* muted text */
+  --lchaty-bg: #ffffff;         /* light bg */
+  --lchaty-border: #e6eef8;     /* borders */
+}
+
+:root.dark {
+  --lchaty-bg: #0a0a0a;         /* dark bg */
+  --lchaty-fg: #e5e7eb;         /* light fg */
+  --lchaty-muted: #9ca3af;      /* muted on dark */
+  --lchaty-border: #243244;     /* subtle border on dark */
+}

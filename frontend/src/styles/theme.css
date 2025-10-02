@@ -1,7 +1,11 @@
 :root {
-  --color-bg: #0f172a;
-  --color-fg: #e6eef8;
-  --accent: #7c3aed;
+  --color-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  --color-fg: #f8fafc;
+  --accent: #3b82f6;
 }
 
-body { background: var(--color-bg); color: var(--color-fg); }
+body { 
+  background: var(--color-bg);
+  color: var(--color-fg);
+  min-height: 100vh;
+}

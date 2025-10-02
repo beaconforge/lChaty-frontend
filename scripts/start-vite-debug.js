@@ -39,10 +39,12 @@ const timeoutSec = Number(argv.timeout || argv.t || process.env.START_TIMEOUT ||
 const cmd = process.platform === 'win32' ? 'powershell' : 'sh'
 let args
 if (process.platform === 'win32') {
-  const childCmd = `& { $env:EXTERNAL_START='1'; Set-Location -Path \"${frontend}\"; npm run dev -- --port ${port} ${https ? '--https' : ''} }`
+  // ensure DEV_CERT_PASSPHRASE is set for the child (fallback to 'changeit')
+  const childCmd = `& { $env:EXTERNAL_START='1'; if (-not $env:DEV_CERT_PASSPHRASE) { $env:DEV_CERT_PASSPHRASE='changeit' }; Set-Location -Path "${frontend}"; npm run dev -- --port ${port} ${https ? '--https' : ''} }`
   args = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', childCmd]
 } else {
-  const childCmd = `EXTERNAL_START=1 cd \"${frontend}\" && npm run dev -- --port ${port} ${https ? '--https' : ''}`
+  // set DEV_CERT_PASSPHRASE in POSIX child environment if not already set
+  const childCmd = `DEV_CERT_PASSPHRASE=${process.env.DEV_CERT_PASSPHRASE || 'changeit'} EXTERNAL_START=1 cd "${frontend}" && npm run dev -- --port ${port} ${https ? '--https' : ''}`
   args = ['-c', childCmd]
 }
 

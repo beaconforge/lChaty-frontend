@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 /* Basic app styles */
-html,body { height:100%; }
-body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+html,body { height:100%; margin: 0; padding: 0; }
+body { 
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background-color: #f9fafb;
+  color: #1f2937;
+}
 
 @import './tokens.css';
 

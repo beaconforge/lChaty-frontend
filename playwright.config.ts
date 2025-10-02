@@ -5,6 +5,16 @@ const baseUser = process.env.PLAYWRIGHT_BASE_URL || 'https://local.lchaty.com:51
 const baseAdmin = process.env.PLAYWRIGHT_ADMIN_BASE_URL || 'https://local.admin.lchaty.com:5173';
 
 const isLive = process.env.E2E_MODE === 'LIVE';
+const mapLocal = process.env.MAP_LOCAL_HOSTS === '1';
+const hostResolverArg = mapLocal ? '--host-resolver-rules=MAP local.lchaty.com 127.0.0.1,MAP local.admin.lchaty.com 127.0.0.1' : undefined;
+
+// Build args array for Chromium launch once
+const commonArgs: string[] = hostResolverArg ? [hostResolverArg] : [];
+
+const projects = [
+  { name: 'chromium-user', use: { ...devices['Desktop Chrome'], baseURL: baseUser, launchOptions: { args: commonArgs as any } } },
+  { name: 'chromium-admin', use: { ...devices['Desktop Chrome'], baseURL: baseAdmin, launchOptions: { args: commonArgs as any } } },
+];
 
 export default defineConfig({
   testDir: './tests',
@@ -27,9 +37,6 @@ export default defineConfig({
     reuseExistingServer: true,
     timeout: 120_000,
   }) as any,
-  projects: [
-    { name: 'chromium-user', use: { ...devices['Desktop Chrome'], baseURL: baseUser } },
-    { name: 'chromium-admin', use: { ...devices['Desktop Chrome'], baseURL: baseAdmin } },
-  ],
+  projects,
   metadata: { mode: isLive ? 'LIVE' : 'MOCK' },
 });

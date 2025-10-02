@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <style><![CDATA[
+      :root {
+        --bubble-green: #00FF41;
+        --bubble-pink:  #FF0080;
+        --navy:         #1A4480;
+        --black:        #000000;
+        --bg:           transparent;
+      }
+      .wordmark {
+        fill: var(--navy);
+        stroke: var(--black);
+        stroke-width: 1.6;
+        paint-order: stroke fill;
+        vector-effect: non-scaling-stroke;
+        shape-rendering: geometricPrecision;
+        text-rendering: optimizeLegibility;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                     Arial, "Noto Sans", "Liberation Sans", "DejaVu Sans", sans-serif;
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
+    ]]></style>
+  </defs>
+
+  <rect width="100%" height="100%" fill="var(--bg)" />
+
+  <!-- Clean, simple bubbles -->
+  <g transform="translate(0,0)">
+    <!-- Back (green) bubble -->
+    <g transform="translate(260,90)">
+      <ellipse cx="280" cy="210" rx="230" ry="170" fill="var(--bubble-green)"/>
+      <!-- tail: a rounded wedge -->
+      <path fill="var(--bubble-green)"
+            d="M 185 345
+               C 160 375, 140 395, 125 430
+               C 122 410, 118 395, 108 378
+               C 95 356, 90 342, 120 332
+               Z"/>
+    </g>
+
+    <!-- Front (pink) bubble -->
+    <g transform="translate(430,70)">
+      <ellipse cx="330" cy="220" rx="190" ry="150" fill="var(--bubble-pink)"/>
+      <!-- tail to lower-right -->
+      <path fill="var(--bubble-pink)"
+            d="M 420 320
+               C 455 330, 480 345, 505 370
+               C 486 330, 490 300, 490 280
+               C 470 300, 450 312, 430 318
+               Z"/>
+    </g>
+  </g>
+
+  <!-- Wordmark -->
+  <g class="wordmark" font-size="220" transform="translate(150,600)">
+    <text x="0" y="0">lchaty</text>
+  </g>
+</svg>

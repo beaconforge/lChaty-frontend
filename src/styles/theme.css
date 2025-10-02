@@ -59,12 +59,16 @@
   --radius-xl: 0.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #0f172a;
-    --color-foreground: #f8fafc;
-    --color-border: #334155;
-  }
+/* Force dark theme */
+:root {
+  --color-background: #0f172a;
+  --color-foreground: #f8fafc;
+  --color-border: #334155;
+}
+
+body {
+  background: linear-gradient(to bottom right, #0f172a, #1e40af, #1e293b);
+  min-height: 100vh;
 }
 
 /* Custom scrollbar */
@@ -95,4 +99,20 @@
 .focus-ring:focus-visible {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
 }
