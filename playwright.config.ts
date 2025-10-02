@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 // Allow overriding the Playwright base URLs with environment variables when testing
-const baseUser = process.env.PLAYWRIGHT_BASE_URL || 'https://local.lchaty.com:5173';
-const baseAdmin = process.env.PLAYWRIGHT_ADMIN_BASE_URL || 'https://local.admin.lchaty.com:5173';
+const baseUser = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
+const baseAdmin = process.env.PLAYWRIGHT_ADMIN_BASE_URL || 'http://localhost:3000';
 
 const isLive = process.env.E2E_MODE === 'LIVE';
 const mapLocal = process.env.MAP_LOCAL_HOSTS === '1';
@@ -25,7 +25,6 @@ export default defineConfig({
   reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   use: {
     baseURL: baseUser,
-    ignoreHTTPSErrors: true,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
