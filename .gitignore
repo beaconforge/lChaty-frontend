@@ -49,6 +49,15 @@ test-results/
 test-results/**
 playwright-report/
 
+# Screenshot artifacts and auth files (dev/test only)
+*.png
+!docs/**/*.png
+frontend/.auth/
+frontend/admin-*.png
+frontend/user-*.png
+admin-*.png
+user-*.png
+
 # Snapshot screenshots and temporary pages
 page-snap-*.png
 *.webm
