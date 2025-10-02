@@ -3,16 +3,15 @@ import { resolve } from 'path'
 import { readFileSync } from 'fs'
 
 export default defineConfig({
-  // HTTP development server temporarily for testing
+  // HTTPS development server for local.lchaty.com and local.admin.lchaty.com
   server: {
     host: '0.0.0.0', // Accept connections on all interfaces
     port: 5173,
     strictPort: true,
-    // Temporarily disable HTTPS to test basic connectivity
-    // https: {
-    //   key: readFileSync(resolve(__dirname, 'certs/local.lchaty.com+1-key.pem')),
-    //   cert: readFileSync(resolve(__dirname, 'certs/local.lchaty.com+1.pem'))
-    // }
+    https: {
+      key: readFileSync(resolve(__dirname, 'certs/local.lchaty.com+1-key.pem')),
+      cert: readFileSync(resolve(__dirname, 'certs/local.lchaty.com+1.pem'))
+    }
   },
 
   // Path resolution for imports
