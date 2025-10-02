@@ -60,6 +60,7 @@ export class Login {
                 <label class="block text-sm font-medium text-[var(--lchaty-fg)]">Username</label>
                 <input 
                   id="username"
+                  name="username"
                   data-testid="login-username" 
                   type="text" 
                   required
@@ -73,6 +74,7 @@ export class Login {
                 <label class="block text-sm font-medium text-[var(--lchaty-fg)]">Password</label>
                 <input 
                   id="password"
+                  name="password"
                   data-testid="login-password" 
                   type="password" 
                   required
