@@ -11,6 +11,11 @@ export async function login(payload: { username: string; password: string }) {
   return r.data
 }
 
+export async function signup(payload: { username: string; password: string; email?: string }) {
+  const r = await http.post(AUTH_ENDPOINTS.signup, payload)
+  return r.data
+}
+
 export async function logout() {
   const r = await http.post(AUTH_ENDPOINTS.logout)
   return r.data

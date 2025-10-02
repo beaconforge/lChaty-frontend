@@ -1,17 +1,17 @@
 /**
- * Login page component with enhanced authentication, loading, and error handling
+ * Unified Login component that handles both user and admin authentication
+ * with automatic routing based on user privileges
  */
 
 import { authService } from '../services/auth';
 import { loadingService, LoadingSpinner } from '../services/loading';
 import { errorService } from '../services/error';
 
-export class Login {
+export class UnifiedLogin {
   private container: HTMLElement;
   private loadingSpinner?: LoadingSpinner;
   private unsubscribeAuth?: () => void;
   private hasAttemptedLogin: boolean = false;
-  public onLogin?: (credentials: { username: string; password: string }) => Promise<void>;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -20,7 +20,6 @@ export class Login {
 
   private setupAuthSubscription(): void {
     this.unsubscribeAuth = authService.subscribe((authState) => {
-      // Update UI based on auth state
       this.updateAuthState(authState);
     });
   }
@@ -44,6 +43,13 @@ export class Login {
   }
 
   render(): void {
+    const currentHost = window.location.hostname;
+    const isAdminPortal = currentHost.includes('admin');
+    const portalType = isAdminPortal ? 'Admin' : 'User';
+    const portalDescription = isAdminPortal 
+      ? 'Access the administrative dashboard' 
+      : 'Start chatting with AI models';
+
     this.container.innerHTML = `
       <main class="min-h-screen bg-[var(--lchaty-bg)] text-[var(--lchaty-fg)]">
         <section class="mx-auto max-w-5xl px-4 py-12 flex flex-col items-center">
@@ -52,8 +58,8 @@ export class Login {
             alt="lChaty logo" 
             class="w-full max-w-[520px]" 
           />
-          <h1 class="mt-6 text-3xl font-bold text-center">Foundation. Innovation. Connection.</h1>
-          <p class="mt-2 text-[var(--lchaty-muted)]">Sign in to continue</p>
+          <h1 class="mt-6 text-3xl font-bold text-center">lChaty ${portalType} Portal</h1>
+          <p class="mt-2 text-[var(--lchaty-muted)]">${portalDescription}</p>
 
           <div class="mt-8 w-full max-w-[520px] rounded-xl border border-[var(--lchaty-border)] bg-white/60 dark:bg-white/5 p-6 shadow-sm">
             <form id="loginForm" class="space-y-4">
@@ -85,33 +91,46 @@ export class Login {
                 />
               </div>
 
-              <label class="flex items-center gap-2 text-sm text-[var(--lchaty-fg)]">
-                <input type="checkbox" id="showPassword" class="rounded border-[var(--lchaty-border)]" />
-                Show password
-              </label>
+              <div class="flex items-center">
+                <input 
+                  id="showPassword" 
+                  type="checkbox" 
+                  class="h-4 w-4 rounded border-[var(--lchaty-border)] text-blue-600 focus:ring-blue-500"
+                />
+                <label for="showPassword" class="ml-2 text-sm text-[var(--lchaty-muted)]">Show password</label>
+              </div>
 
-              <div id="errorMessage" class="hidden text-red-600 text-sm text-center bg-red-50 dark:bg-red-900/20 p-3 rounded-md"></div>
+              <div id="errorMessage" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm"></div>
 
               <button 
-                data-testid="login-submit" 
-                type="submit"
-                class="w-full rounded-md bg-[var(--lchaty-accent-600)] hover:bg-[var(--lchaty-accent-500)] text-white h-10 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                id="loginButton"
+                type="submit" 
+                data-testid="login-submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Sign In
               </button>
             </form>
-          </div>
 
-          <p class="mt-6 text-[var(--lchaty-muted)]">Want to learn more about our beta?</p>
-          <div class="mt-2 flex gap-2">
-            <a 
-              href="#"
-              id="betaLink"
-              class="inline-flex items-center justify-center rounded-md bg-[var(--lchaty-accent-600)] hover:bg-[var(--lchaty-accent-500)] text-white px-5 h-10 font-semibold transition-colors"
-            >
-              Explore the Beta Program
-            </a>
-            <a href="#" id="createAccountLink" class="inline-flex items-center justify-center rounded-md border px-4 h-10">Create account</a>
+            <div class="mt-6 text-center">
+              <p class="text-sm text-[var(--lchaty-muted)]">
+                Need an account? 
+                <button 
+                  id="signupLink" 
+                  class="text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+                >
+                  Sign up here
+                </button>
+              </p>
+            </div>
+            
+            ${isAdminPortal ? `
+              <div class="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md">
+                <p class="text-sm text-amber-800 dark:text-amber-200">
+                  <strong>Admin Portal:</strong> Administrator credentials required.
+                </p>
+              </div>
+            ` : ''}
           </div>
         </section>
       </main>
@@ -124,10 +143,18 @@ export class Login {
     const form = this.container.querySelector('#loginForm') as HTMLFormElement;
     const showPasswordCheckbox = this.container.querySelector('#showPassword') as HTMLInputElement;
     const passwordInput = this.container.querySelector('#password') as HTMLInputElement;
+    const signupLink = this.container.querySelector('#signupLink') as HTMLButtonElement;
 
     if (showPasswordCheckbox && passwordInput) {
       showPasswordCheckbox.addEventListener('change', () => {
         passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+      });
+    }
+
+    if (signupLink) {
+      signupLink.addEventListener('click', () => {
+        // Dispatch custom event for navigation
+        this.container.dispatchEvent(new CustomEvent('navigate-signup', { bubbles: true }));
       });
     }
 
@@ -148,13 +175,11 @@ export class Login {
         
         try {
           loadingService.start('login');
-          await authService.login(username, password);
-          loadingService.success('login');
           
-          // Call the success callback if provided
-          if (this.onLogin) {
-            await this.onLogin({ username, password });
-          }
+          // The auth service will handle routing automatically based on user privileges
+          await authService.login(username, password);
+          
+          loadingService.success('login');
         } catch (error) {
           const errorInfo = errorService.handleApiError(error, 'login');
           loadingService.error('login', errorInfo.message);
@@ -162,20 +187,9 @@ export class Login {
         }
       });
     }
-
-    // Create account link
-    const createLink = this.container.querySelector('#createAccountLink');
-    if (createLink) {
-      createLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        // dispatch a custom event to inform parent to show signup
-        const ev = new CustomEvent('navigate-signup', { bubbles: true });
-        this.container.dispatchEvent(ev);
-      });
-    }
   }
 
-  showError(message: string): void {
+  private showError(message: string): void {
     const errorElement = this.container.querySelector('#errorMessage');
     if (errorElement) {
       errorElement.textContent = message;
@@ -183,7 +197,7 @@ export class Login {
     }
   }
 
-  hideError(): void {
+  private hideError(): void {
     const errorElement = this.container.querySelector('#errorMessage');
     if (errorElement) {
       errorElement.classList.add('hidden');
@@ -198,5 +212,4 @@ export class Login {
       this.loadingSpinner.destroy();
     }
   }
-
 }

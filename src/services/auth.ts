@@ -79,8 +79,75 @@ class AuthService {
 
     try {
       await userApi.login({ username, password });
-      const user = await userApi.getMe();
+      const response = await userApi.getMe();
       
+      // Extract the actual user object from the response
+      // API returns {user: {...}} but TypeScript expects User directly
+      const user = (response as any).user || response;
+      
+      // Check if this is an admin user and handle routing
+      const isAdminRoute = window.location.hostname.includes('admin') || window.location.pathname.includes('admin');
+      const isUserAdmin = user.is_admin || user.username === 'admin' || user.username?.toLowerCase().includes('admin');
+      
+      console.log('Auth routing debug:', {
+        hostname: window.location.hostname,
+        pathname: window.location.pathname,
+        isAdminRoute,
+        isUserAdmin,
+        username: user.username,
+        is_admin: user.is_admin
+      });
+      
+      // Detailed user object debugging
+      console.log('Full user object:', user);
+      console.log('User object keys:', Object.keys(user));
+      console.log('Admin detection breakdown:', {
+        'user.is_admin': user.is_admin,
+        'user.username === "admin"': user.username === 'admin',
+        'user.username?.toLowerCase().includes("admin")': user.username?.toLowerCase().includes('admin'),
+        'Final isUserAdmin': isUserAdmin
+      });
+      
+      console.log('Routing decision:', { isUserAdmin, isAdminRoute, 
+        condition1: isUserAdmin && !isAdminRoute,
+        condition2: !isUserAdmin && isAdminRoute 
+      });
+      
+      if (isUserAdmin && !isAdminRoute) {
+        // Admin user trying to access user portal - redirect to admin portal
+        console.log('Admin user on user portal - redirecting to admin portal');
+        this.updateState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null
+        });
+        // Redirect to admin portal on the admin subdomain
+        window.location.href = 'https://local.admin.lchaty.com:5173/admin.html';
+        return;
+      } else if (!isUserAdmin && isAdminRoute) {
+        // Regular user trying to access admin portal - redirect to user portal
+        console.log('Regular user trying admin portal - redirecting to user portal');
+        this.updateState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null
+        });
+        // Redirect to user portal
+        window.location.href = 'https://local.lchaty.com:5173/';
+        return;
+      } else if (isUserAdmin && isAdminRoute) {
+        // Admin user on admin portal - ensure we're on the right page
+        console.log('Admin user on admin portal - checking if on correct page');
+        if (!window.location.pathname.includes('admin.html')) {
+          console.log('Admin user on admin domain but wrong page - redirecting to admin.html');
+          window.location.href = 'https://local.admin.lchaty.com:5173/admin.html';
+          return;
+        }
+      }
+      
+      console.log('Setting authenticated state for user:', user.username, 'on', isAdminRoute ? 'admin' : 'user', 'portal');
       this.updateState({
         user,
         isAuthenticated: true,

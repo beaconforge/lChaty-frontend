@@ -3,6 +3,25 @@ import { resolve } from 'path'
 import { readFileSync } from 'fs'
 
 export default defineConfig({
+  // Custom middleware for admin subdomain routing
+  plugins: [
+    {
+      name: 'admin-subdomain-routing',
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          const host = req.headers.host || '';
+          const isAdminSubdomain = host.includes('local.admin.lchaty.com');
+          
+          // If accessing admin subdomain root, serve admin.html
+          if (isAdminSubdomain && (req.url === '/' || req.url === '/index.html')) {
+            req.url = '/admin.html';
+          }
+          
+          next();
+        });
+      }
+    }
+  ],
   // HTTPS development server for local.lchaty.com and local.admin.lchaty.com
   server: {
     host: '0.0.0.0', // Accept connections on all interfaces
@@ -15,6 +34,13 @@ export default defineConfig({
     hmr: {
       port: 5173, // Use same port as server
       host: 'local.lchaty.com' // Use same domain as server for certificate consistency
+    },
+    // Middleware to handle admin subdomain routing
+    middlewareMode: false,
+    proxy: {},
+    // Configure fallback for admin subdomain
+    fs: {
+      strict: false
     }
   },
 

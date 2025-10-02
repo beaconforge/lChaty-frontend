@@ -51,7 +51,7 @@ export default defineConfig(({ command, mode }) => {
           target: 'https://chat-backend.lchaty.com',
           changeOrigin: true,
           secure: true,
-          cookieDomainRewrite: { '*': 'local.admin.lchaty.com' },
+          cookieDomainRewrite: { '*': 'local.lchaty.com' },
           cookiePathRewrite: { '*': '/' }
         },
         '/api': {
