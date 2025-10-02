@@ -13,6 +13,16 @@ param(
 # administrator. See ../docs/CERT_POLICY_SNIPPET.md for details.
 # -----------------------------------------------------------------------------
 
+# Require explicit approval via environment variable or -Approved switch
+param(
+  [switch]$Approved = $false
+)
+
+if (-not $Approved -and $env:CERT_OP_APPROVED -ne '1') {
+  Write-Error "[SECURITY] Certificate conversion is guarded. Provide -Approved or set CERT_OP_APPROVED=1 in the environment after explicit approval. Aborting."
+  exit 2
+}
+
 if (-not (Test-Path $PfxPath)) { throw "PFX not found: $PfxPath" }
 New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 
