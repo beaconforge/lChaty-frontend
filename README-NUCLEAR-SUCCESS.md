@@ -1,5 +1,12 @@
 # ✅ lChaty Frontend - Simple HTTP Setup
 
+> IMPORTANT - CERTIFICATE & SECURITY POLICY:
+>
+> - Do NOT create, modify, delete, or trust certificates, keys, or the system certificate store unless you have explicit written approval from the project owner.
+> - Any certificate work must be planned, approved, and executed by an authorized admin and recorded in an issue or PR.
+>
+> See `docs/CERT_POLICY_SNIPPET.md` for the canonical policy.
+
 ## 🚀 Quick Start (Nuclear Rebuild Success!)
 
 This setup has been completely rebuilt from the ground up with a simple, reliable HTTP-only configuration.
