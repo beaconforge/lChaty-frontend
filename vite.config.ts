@@ -11,6 +11,10 @@ export default defineConfig({
     https: {
       key: readFileSync(resolve(__dirname, 'certs/local.lchaty.com-mkcert-key.pem')),
       cert: readFileSync(resolve(__dirname, 'certs/local.lchaty.com-mkcert.pem'))
+    },
+    hmr: {
+      port: 5174, // Use different port for WebSocket to avoid conflicts
+      host: 'localhost' // Use localhost for HMR to avoid certificate issues
     }
   },
 
