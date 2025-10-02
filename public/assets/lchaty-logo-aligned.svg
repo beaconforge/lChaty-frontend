@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <style><![CDATA[
+      :root {
+        --bubble-green: #00FF41;
+        --bubble-pink:  #FF0080;
+        --navy:         #1A4480;
+        --black:        #000000;
+        --bg:           transparent;
+      }
+      .wordmark {
+        fill: var(--navy);
+        stroke: var(--black);
+        stroke-width: 1.6;
+        paint-order: stroke fill;
+        vector-effect: non-scaling-stroke;
+        shape-rendering: geometricPrecision;
+        text-rendering: optimizeLegibility;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                     Arial, "Noto Sans", "Liberation Sans", "DejaVu Sans", sans-serif;
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
+    ]]></style>
+  </defs>
+
+  <rect width="100%" height="100%" fill="var(--bg)" />
+
+  <!-- Bubbles from original -->
+  <g transform="translate(350,80) scale(0.9)">
+    <path fill="#00FF41" d="M338.363,366.479C338.16,366.717,337.987,366.997,337.975,366.997C337.331,367.145,336.258,367.923,334.898,368.521C334.207,369.506,328.465,376.732,327.157,394.401C331.769,402.184,332.221,402.962,333.227,403.424C334.261,404.407,334.463,404.648,334.689,404.826C335.195,405.251,335.885,405.464,336.413,405.849C336.785,406.145,336.785,406.145,336.785,406.145C336.785,406.145,338.219,406.96,338.74,407.72C339.828,410.788,341.226,416.029,342.156,419.665C342.92,421.008,343.283,421.412,344.036,421.495C344.247,414.624,349.862,422.031,364.845,420.823C366.232,420.824,366.232,420.824,366.232,420.824L366.232,420.824C366.232,420.824,367.402,420.823,367.402,420.823C387.416,420.823,387.416,420.823,387.416,420.823C387.416,420.823,394.429,420.823,394.429,420.823C394.429,420.823,394.429,420.823,394.429,420.823Z"/>
+    <path fill="#FF0080" d="M397.025,409.007C397.025,409.007,397.025,409.007,397.025,409.007C397.025,409.007,397.025,409.007,397.025,409.007Z"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g class="wordmark" font-size="220" text-anchor="middle">
+    <text x="600" y="650">lchaty</text>
+  </g>
+</svg>

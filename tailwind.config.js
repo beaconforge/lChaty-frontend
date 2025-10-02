@@ -5,6 +5,7 @@ export default {
     "./admin.html", 
     "./src/**/*.{js,ts,jsx,tsx,html}"
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
@@ -33,6 +34,16 @@ export default {
           800: 'var(--color-secondary-800)',
           900: 'var(--color-secondary-900)',
           950: 'var(--color-secondary-950)'
+        },
+        'chatgpt': {
+          'primary': '#1f2937',
+          'secondary': '#6b7280', 
+          'tertiary': '#9ca3af',
+          'user-bg': '#eff6ff',
+          'user-border': '#dbeafe',
+          'accent': '#3b82f6',
+          'sidebar': '#f9fafb',
+          'border': '#e5e7eb'
         }
       }
     }

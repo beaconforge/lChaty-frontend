@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <style><![CDATA[
+      :root {
+        --bubble-green: #00FF41;
+        --bubble-pink:  #FF0080;
+        --navy:         #1A4480;
+        --black:        #000000;
+        --bg:           transparent;
+      }
+      .bubbles > .bubble-green { fill: var(--bubble-green); }
+      .bubbles > .bubble-pink  { fill: var(--bubble-pink);  }
+      .wordmark {
+        fill: var(--navy);
+        stroke: var(--black);
+        stroke-width: 1.6;
+        paint-order: stroke fill;
+        vector-effect: non-scaling-stroke;
+        shape-rendering: geometricPrecision;
+        text-rendering: optimizeLegibility;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                     Arial, "Noto Sans", "Liberation Sans", "DejaVu Sans", sans-serif;
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
+	  /* Edge-smoothing for bubble paths */
+      .bubbles path{
+        /* ask the renderer for precise curves */
+        shape-rendering:geometricPrecision;
+        /* keep the stroke width visually constant when scaled */
+        vector-effect:non-scaling-stroke;
+        /* smooth corners and endpoints */
+        stroke-linejoin:round;
+        stroke-linecap:round;
+        /* draw stroke first so it 'hugs' the outside edge */
+        paint-order:stroke fill;
+        /* very thin hairline that just anti-aliases the edge */
+        stroke-width:.5;
+      }
+      .bubbles .bubble-green{
+        fill:var(--bubble-green);
+        stroke:var(--bubble-green);
+      }
+      .bubbles .bubble-pink{
+        fill:var(--bubble-pink);
+        stroke:var(--bubble-pink);
+      }
+    ]]></style>
+  </defs>
+
+  <!-- background for preview (transparent) -->
+  <rect width="100%" height="100%" fill="var(--bg)" />
+
+  <!-- Chat bubbles (richer shapes borrowed from lchaty-logo-main.svg) -->
+  <!-- scaled/translated to fit this file's larger viewport -->
+  <g class="bubbles" transform="translate(-45,55) scale(1.36)">
+    <path class="bubble-green" opacity="1.000000"
+      d="M352.124725,206.128784 
+    C334.969910,206.090652 317.813904,206.148911 300.661133,205.941193 
+    C296.761719,205.893982 293.724365,206.871460 290.710449,209.414276 
+    C282.187897,216.604767 273.380524,223.456619 264.736145,230.504211 
+    C260.727234,233.772629 256.460876,235.482300 251.397247,233.215912 
+    C246.144226,230.864746 245.251724,226.248886 245.272537,221.169037 
+    C245.313477,211.175812 245.494446,201.177597 245.214981,191.192703 
+    C245.149475,188.852264 244.035660,186.054535 242.464752,184.315994 
+    C219.554947,158.961182 211.704849,129.624985 222.950058,97.357933 
+    C233.643677,66.673676 257.118500,49.068367 289.098083,44.382950 
+    C301.988068,42.494404 315.372498,43.640453 328.519379,43.945576 
+    C340.625214,44.226536 352.962524,43.938396 364.755920,46.202850 
+    C385.618347,50.208656 401.610046,62.470074 413.486145,80.010727 
+    C414.957031,82.183144 415.893585,84.717316 416.926392,87.681297 
+    C414.886780,88.480766 413.001343,88.824951 411.109772,88.862648 
+    C393.754791,89.208443 378.308685,94.814636 365.126160,106.077690 
+    C341.949951,125.879311 332.391571,150.731110 340.012299,180.632965 
+    C342.292389,189.579453 347.991852,197.654495 352.124725,206.128784 
+    z"/>
+
+    <path class="bubble-pink" opacity="1.000000" 
+      d="M478.273102,102.849609
+    C478.273102,102.849609 486.003143,109.715019 490.066345,113.752861
+    C490.848755,114.889603 491.432953,115.421227 492.017151,115.952843
+    C513.980774,139.847794 514.754883,178.999588 493.794128,205.991272
+    C492.977875,207.042374 492.322723,208.350021 491.271210,209.066635
+    C481.283875,215.872955 481.895111,226.027328 482.420807,236.242752
+    C483.089577,249.238421 458.606286,246.061544 448.232697,238.205124
+    C444.173187,235.130661 440.001923,233.945450 434.914825,233.842896
+    C421.313110,233.568634 407.666168,233.239258 394.155029,231.814377
+    C381.188035,230.446881 365.791359,226.697704 361.165405,214.506989
+    C360.352081,212.363647 359.806671,210.299713 358.477753,209.113861
+    C335.737549,188.822205 335.951691,151.751389 347.282898,130.608521
+    C355.870941,114.584122 368.903717,103.093887 385.394348,96.155060
+    C392.836700,93.023499 401.406891,91.827202 409.549377,91.416100
+    C413.677551,91.207672 417.172913,92.525703 421.950073,90.646240
+    C429.897308,92.519569 438.821045,92.295288 447.281494,92.681885
+    C453.762115,93.509995 460.469940,94.532501 467.076721,95.913315
+    C467.252441,95.945900 467.428192,95.978477 467.947357,96.419342
+    C468.958862,97.107597 469.627014,97.387566 470.295135,97.667542
+    C470.295135,97.667542 470.260162,97.895996 470.252502,98.177521
+    C470.897888,99.621696 472.273102,102.849609 478.273102,102.849609
+    z"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g class="wordmark" font-size="220" transform="translate(150,600)">
+    <text x="0" y="0">lchaty</text>
+  </g>
+</svg>

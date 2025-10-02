@@ -6,11 +6,37 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const CERT_PATH = env.DEV_CERT_PATH || './certs/local.lchaty.com+1.pem';
   const KEY_PATH = env.DEV_KEY_PATH || './certs/local.lchaty.com+1-key.pem';
+  const PFX_PATH = env.DEV_PFX_PATH || './certs/local.lchaty.com.pfx';
   const BACKEND_PROXY = env.VITE_BACKEND_API_PROXY || 'https://chat-backend.lchaty.com';
   const WORKER_PROXY = env.VITE_WORKER_API_PROXY || 'https://chat-backend.lchaty.com';
-  const https = (fs.existsSync(CERT_PATH) && fs.existsSync(KEY_PATH))
-    ? { cert: fs.readFileSync(CERT_PATH), key: fs.readFileSync(KEY_PATH) }
-    : undefined;
+  // Prefer PEM cert+key when present; otherwise fall back to a PFX (with passphrase)
+  let https: any = undefined;
+  if (fs.existsSync(CERT_PATH) && fs.existsSync(KEY_PATH)) {
+    console.log(`[VITE] Loading PEM certificates: cert=${CERT_PATH}, key=${KEY_PATH}`);
+    https = { 
+      cert: fs.readFileSync(CERT_PATH), 
+      key: fs.readFileSync(KEY_PATH),
+      // Add explicit options for better compatibility
+      secureProtocol: 'TLS_server_method',
+      honorCipherOrder: false,
+      requestCert: false,
+      rejectUnauthorized: false
+    };
+  } else if (fs.existsSync(PFX_PATH)) {
+    console.log(`[VITE] Loading PFX certificate: ${PFX_PATH}`);
+    const pass = process.env.DEV_PFX_PASSWORD || env.DEV_PFX_PASSWORD || 'changeit';
+    https = { 
+      pfx: fs.readFileSync(PFX_PATH), 
+      passphrase: pass,
+      secureProtocol: 'TLS_server_method',
+      honorCipherOrder: false,
+      requestCert: false,
+      rejectUnauthorized: false
+    };
+  } else {
+    console.log('[VITE] No certificates found, using HTTP');
+    https = undefined;
+  }
 
   // HMR should connect to the browser-visible host so the client websocket
   // connects to wss://local.lchaty.com:5173 when using portproxy.

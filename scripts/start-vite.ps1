@@ -17,12 +17,12 @@ try {
   $scriptDir = Get-Location
 }
 
-$frontendPath = Join-Path $scriptDir '..\frontend'
+$rootPath = Join-Path $scriptDir '..'
 try {
-  $frontend = (Resolve-Path $frontendPath -ErrorAction Stop).Path
+  $frontend = (Resolve-Path $rootPath -ErrorAction Stop).Path
 } catch {
   # Fallback: use the raw path
-  $frontend = $frontendPath
+  $frontend = $rootPath
 }
 
 # Build vite flags
@@ -33,6 +33,7 @@ $flagStr = $flags -join ' '
 # Child command: set EXTERNAL_START and optionally FORCE_HTTP, then run the dev script from the frontend folder
 $childCmd = "`$env:EXTERNAL_START='1';"
 if ($ForceHttp) { $childCmd += " `$env:FORCE_HTTP='1';" }
+$childCmd += " if (-not `$env:DEV_CERT_PASSPHRASE) { `$env:DEV_CERT_PASSPHRASE='changeit' };"
 $childCmd += " Set-Location -Path `"$frontend`"; npm run dev -- $flagStr"
 
 Write-Host "Launching dev server (detached) -> $frontend"
