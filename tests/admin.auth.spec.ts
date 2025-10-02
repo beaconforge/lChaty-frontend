@@ -114,7 +114,7 @@ test.describe('Admin gating', () => {
     }
 
   // Now navigate to admin portal explicitly
-  await page.goto('https://local.admin.lchaty.com:5173/admin.html');
+  await page.goto('http://localhost:3000/admin.html');
   const adminHeading = page.getByRole('heading', { name: /admin portal|site admin|lChaty Admin Portal/i });
   await expect(adminHeading).toBeVisible({ timeout: 20000 });
   // Click the System Health nav link and verify page shows healthy/ok

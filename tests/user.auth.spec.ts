@@ -39,7 +39,7 @@ test.describe('User auth flow', () => {
       } catch(e) {}
     });
   // Always target the canonical user host to avoid running against admin host when Playwright runs multiple projects
-  await page.goto('https://local.lchaty.com:5173');
+  await page.goto('http://localhost:3000');
 
     // If already signed-in, the chat UI will show a recognizable heading or the send textbox — skip login flow.
     const chatHeading = page.getByRole('heading', { name: /start a conversation/i });
