@@ -9,8 +9,8 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     https: {
-      key: readFileSync(resolve(__dirname, 'certs/local.lchaty.com+1-key.pem')),
-      cert: readFileSync(resolve(__dirname, 'certs/local.lchaty.com+1.pem'))
+      key: readFileSync(resolve(__dirname, 'certs/local.lchaty.com-mkcert-key.pem')),
+      cert: readFileSync(resolve(__dirname, 'certs/local.lchaty.com-mkcert.pem'))
     }
   },
 
