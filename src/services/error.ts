@@ -68,6 +68,9 @@ class ErrorService {
     // Log to console in development
     if (import.meta.env.DEV) {
       console.error('Error captured:', errorInfo);
+      if (error && error !== errorInfo) {
+        console.error('Original error object:', error);
+      }
     }
 
     // Notify listeners

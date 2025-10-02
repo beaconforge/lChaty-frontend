@@ -28,6 +28,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    ignoreHTTPSErrors: true,
   },
   // If SKIP_START=1 is set we assume a dev server is already running and will not attempt to start it.
   webServer: (process.env.SKIP_START === '1' ? undefined : {

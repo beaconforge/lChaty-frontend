@@ -35,6 +35,20 @@ class HttpService {
     this.client.interceptors.request.use(
       (config) => {
         // Add any request modifications here (auth headers, etc.)
+        try {
+          // Surface request info to the browser console so Playwright can capture it
+          // (only do this in browser context)
+          if (typeof window !== 'undefined' && typeof (window as any).console !== 'undefined' && typeof (window as any).console.debug === 'function') {
+            // build full url if baseURL present
+            const fullUrl = (config.baseURL || '') + (config.url || '');
+            // Avoid logging bodies that might contain sensitive data in CI; only log method+url
+            // but in local dev this helps to diagnose missing network calls
+            // eslint-disable-next-line no-console
+            console.debug('[http] request ->', (config.method || '').toUpperCase(), fullUrl);
+          }
+        } catch (e) {
+          // swallow logging errors
+        }
         return config;
       },
       (error) => Promise.reject(error)
@@ -42,7 +56,19 @@ class HttpService {
 
     // Response interceptor
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        try {
+          if (typeof window !== 'undefined' && typeof (window as any).console !== 'undefined' && typeof (window as any).console.debug === 'function') {
+            const cfg: any = response.config || {};
+            const fullUrl = (cfg.baseURL || '') + (cfg.url || '');
+            // eslint-disable-next-line no-console
+            console.debug('[http] response <-', response.status, fullUrl, response.headers && (response.headers['set-cookie'] || response.headers['Set-Cookie'] || '<no-set-cookie>'));
+          }
+        } catch (e) {
+          // ignore
+        }
+        return response;
+      },
       async (error: AxiosError) => {
         const apiError = this.transformError(error);
         
@@ -51,6 +77,14 @@ class HttpService {
           return this.retryRequest(error);
         }
 
+        try {
+          if (typeof window !== 'undefined' && typeof (window as any).console !== 'undefined' && typeof (window as any).console.debug === 'function') {
+            // eslint-disable-next-line no-console
+            console.debug('[http] error <-', apiError.status || '<no-status>', apiError.message || '<no-message>');
+          }
+        } catch (e) {
+          // ignore
+        }
         return Promise.reject(apiError);
       }
     );
