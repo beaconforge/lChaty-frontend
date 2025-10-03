@@ -16,11 +16,11 @@ Required repo additions / edits (exact files)
 
 2. Add `scripts/run-e2e-ci.js` (Node): orchestrator/run-until-green
    - Purpose: single command to run the full unattended loop. Steps:
-     - Run `npm ci` in repo root and `frontend` (or `npm ci` root and `cd frontend && npm ci`).
+     - Run `npm ci` in repo root.
      - Invoke `scripts/kill-port.* -Port 5173 -Force` to free the port.
      - Start the server via `scripts/start-vite-ci.js --port 5173 --https`.
      - Poll readiness for both origins (uses built-in poller or `scripts/ping-origins.ps1`/`ping-origins.js`) up to configurable timeout (default 120s).
-     - Run Playwright MOCK tests (`npx playwright test` or `npm run e2e` in `frontend`).
+     - Run Playwright MOCK tests (`npx playwright test` or `npm run e2e`).
      - On failure: collect `logs/vite.log`, Playwright report (`playwright-report/`), traces, and retry up to N times with exponential backoff (configurable).
      - If MOCK is green, optionally run LIVE tests only if `RUN_LIVE=1` and required secrets (envs) are present.
      - Exit with the Playwright exit code (0 if green, non-zero otherwise).
@@ -29,7 +29,7 @@ Required repo additions / edits (exact files)
    - Purpose: poll the two hostnames/URLs using Node fetch with ignore-SSL option; return success when both respond 200.
    - Usage: `node scripts/ping-origins.js --timeout 120` or called from `run-e2e-ci.js`.
 
-4. Edit `frontend/playwright.config.ts` to accept env overrides
+4. Edit `playwright.config.ts` to accept env overrides
    - Change baseURL lines to read from env var fallbacks, for example:
      - local: `process.env.LOCAL_BASEURL ?? 'https://local.lchaty.com:5173'`
      - admin: `process.env.ADMIN_BASEURL ?? 'https://local.admin.lchaty.com:5173'`
@@ -64,7 +64,7 @@ un-e2e-local.ps1` (calls the Node orchestrator).
    - Kill port 5173 (force)
    - Start Vite in background via `start-vite-ci.js`, wait 1-2s to confirm spawn and write `tmp/vite.pid`.
    - Poll `LOCAL_BASEURL` and `ADMIN_BASEURL` until both respond OK or timeout.
-   - On success, run Playwright tests in `frontend` with `npx playwright test --reporter=list` (store reports to `artifacts/playwright-report/`).
+   - On success, run Playwright tests with `npx playwright test --reporter=list` (store reports to `artifacts/playwright-report/`).
    - On failure, collect `logs/vite.log`, `tmp/vite.pid` snapshot, Playwright report, and retry if remaining attempts.
    - On success, gracefully kill background Vite process using PID file or platform-specific kill.
 
@@ -83,7 +83,7 @@ Clean up and idempotency
 Minimal implementation plan and priorities (what I'll implement for you if you approve)
 1. Implement `scripts/start-vite-ci.js` (Node): background starter with logs + pid file. (High priority)
 2. Implement `scripts/run-e2e-ci.js` (Node): orchestrator that sequences start/poll/run/retry and captures artifacts. (High priority)
-3. Implement `scripts/ping-origins.js` (Node) and modify `frontend/playwright.config.ts` to use env overrides for baseURLs. (Medium)
+3. Implement `scripts/ping-origins.js` (Node) and modify `playwright.config.ts` to use env overrides for baseURLs. (Medium)
 4. Add small proxy logging middleware to record Set-Cookie headers to `logs/set-cookie.log`. (Medium)
 
 Acceptance criteria (how we measure done)
@@ -96,7 +96,7 @@ Acceptance criteria (how we measure done)
 
 Appendix: sample minimal `start-vite-ci.js` behavior (pseudocode)
 ```
-// spawn child: env.EXTERNAL_START='1', cwd=frontend, command: npm run dev -- --port 5173 --https
+// spawn child: env.EXTERNAL_START='1', cwd=repo root, command: npm run dev -- --port 5173 --https
 // redirect stdout/stderr to logs/vite.log
 // write child.pid to tmp/vite.pid
 // detach and exit 0

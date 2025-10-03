@@ -15,13 +15,13 @@ Trust boundaries
 - Cloudflare Worker: trusted gateway and security boundary.
 
 File map (important files only)
-- frontend/index.html — user entry
-- frontend/admin.html — admin entry
-- frontend/vite.config.ts — HTTPS and proxy rules
-- frontend/src/config/backend.ts — API endpoints (export constants)
-- frontend/src/services/http.ts — Axios instance (withCredentials: true)
-- frontend/src/services/api.user.ts — user API wrappers
-- frontend/src/services/api.admin.ts — admin API wrappers
+- index.html — user entry
+- admin.html — admin entry
+- vite.config.ts — HTTPS and proxy rules
+- src/config/backend.ts — API endpoints (export constants)
+- src/services/http.ts — Axios instance (withCredentials: true)
+- src/services/api.user.ts — user API wrappers
+- src/services/api.admin.ts — admin API wrappers
 
 Data flow diagram (ASCII)
 

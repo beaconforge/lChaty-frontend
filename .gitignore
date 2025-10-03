@@ -1,38 +1,27 @@
-﻿# Node
-/frontend/node_modules/
+# Node modules
 /node_modules/
 
-# Vite / build
-/frontend/dist/
+# Build outputs
+/dist/
 
-# Certs, keys and pfxs
+# Certificates and keys
 /certs/
 /local.lchaty.com.pfx
 /local.lchaty.com.*.pfx
-
-# Playwright artifacts
-/frontend/playwright-report/
-/frontend/test-results/
-
-# Editor
-.vscode/
-.idea/
-# Ignore development certificates and private keys
 certs/*.key
 certs/*.pfx
-
-# Optional: ignore other cert artifacts
 certs/*.pem
 certs/*.cer
-node_modules/
-dist/
-*.pem
-*.key
-.env
-.env.*
-/frontend_Back/
 
-# Ignore various runtime logs, previews and temp artifacts
+# Playwright artifacts
+/playwright-report/
+/test-results/
+
+# Editor settings
+.vscode/
+.idea/
+
+# Logs and runtime artifacts
 *.log
 *.log.*
 preview-*.log
@@ -41,27 +30,23 @@ playwright-*.log
 npm-ls-*.log
 openssl-*.log
 cert-gen.log
-
-# Artifacts and temporary outputs
 artifacts/
 tmp/
-test-results/
-test-results/**
-playwright-report/
 
-# Screenshot artifacts and auth files (dev/test only)
+# Environment files
+.env
+.env.*
+
+# Screenshot artifacts (allow docs)
 *.png
 !docs/**/*.png
-frontend/.auth/
-frontend/admin-*.png
-frontend/user-*.png
 admin-*.png
 user-*.png
 
-# Snapshot screenshots and temporary pages
+# Snapshot captures and temporary media
 page-snap-*.png
 *.webm
 
-# local debug files
+# Local debug helpers
 mod.txt
 probe-after-start.txt

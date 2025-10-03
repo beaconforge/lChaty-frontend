@@ -4,8 +4,8 @@ Overview
 --------
 We have two states:
 
-- Backup (rich): `frontend_Back` — polished layout, sidebar, chat layout, detailed Tailwind styles and components.
-- Current (minimal): `frontend` — intentionally small shell, easier to maintain, but visually sparse.
+- Backup (rich): legacy archive — polished layout, sidebar, chat layout, detailed Tailwind styles and components.
+- Current (minimal): `src/app` implementation — intentionally small shell, easier to maintain, but visually sparse.
 
 Goal
 ----
@@ -37,7 +37,7 @@ Prioritized tasks (short term)
    - Acceptance: Build passes, Playwright smoke tests still green, visual snapshots match design within tolerance.
 
 5. Expand chat area
-   - Developer: port the `ChatComponent` layout from `frontend_Back/src/components/ChatComponent.ts` but keep internal logic stubbed to call existing `services/api.*`.
+   - Developer: port the richer `ChatComponent` layout from the legacy archive but keep internal logic stubbed to call existing `services/api.*`.
    - Acceptance: Chat placeholder renders, UI elements have stable data-testids for E2E.
 
 Acceptance criteria (each milestone)

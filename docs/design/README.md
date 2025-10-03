@@ -5,8 +5,8 @@ Purpose
 -------
 This README explains how to annotate the two screenshots in this repo so the Product Designer can produce a short visual brief. The screenshots are:
 
-- `docs/design/login_current.png` — current minimal UI (served from `frontend/dist`)
-- `docs/design/login_backup.png` — backup polished UI (served from `frontend_Back`)
+- `docs/design/login_current.png` — current minimal UI (captured from the deployed user app)
+- `docs/design/login_backup.png` — backup polished UI (legacy reference mock)
 
 Recommended annotation workflow
 -------------------------------
@@ -44,6 +44,6 @@ How we will use the annotations
 
 Git notes (exclusions)
 ---------------------
-- We intentionally exclude `frontend_Back/` and `certs/` from commits. `frontend_Back/` is kept locally for reference only — do not commit it. `certs/` is excluded because it contains private keys.
+- We intentionally exclude `certs/` from commits because it contains private keys and generated TLS assets.
 
 If you want me to create a PR branch with the annotated files included, say so and I'll create `design/visual-merge` and prepare a PR-ready commit (you will need to push it).

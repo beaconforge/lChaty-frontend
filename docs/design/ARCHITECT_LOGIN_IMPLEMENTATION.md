@@ -7,15 +7,15 @@ Goals
 -----
 - Implement accessible, responsive login screens with minimal DOM changes.
 - Keep Playwright testability: provide `data-testid` attributes for key elements.
-- Use CSS custom properties (already present in `frontend/src/styles/tokens.css`) and Tailwind where appropriate.
+- Use CSS custom properties (already present in `src/styles/tokens.css`) and Tailwind where appropriate.
 
 Files to touch
 --------------
-- `frontend/src/styles/tokens.css` — update/add tokens as needed
-- `frontend/src/styles/base.css` — import tokens and small utility classes
-- `frontend/index.html` and `frontend/admin.html` — ensure header and H1 exist
-- `frontend/src/app/user/main.user.tsx` — mount the login card component
-- Optionally: `frontend/src/components/LoginCard.ts` — create a small component that renders HTML + `data-testid`s
+- `src/styles/tokens.css` — update/add tokens as needed
+- `src/styles/base.css` — import tokens and small utility classes
+- `index.html` and `admin.html` — ensure header and H1 exist
+- `src/app/user/main.user.tsx` — mount the login card component
+- Optionally: `src/components/LoginCard.ts` — create a small component that renders HTML + `data-testid`s
 
 Tokens (map to `tokens.css`)
 --------------------------------
@@ -54,12 +54,12 @@ Accessibility
 
 Implementation steps (practical)
 --------------------------------
-1. Add/update tokens in `frontend/src/styles/tokens.css` (dark and light). Provide RGB helpers for focus outlines: `--lchaty-accent-rgb: 11,95,255;`.
-2. Create `frontend/src/components/LoginCard.ts` (plain TS module that returns an HTML string or DOM nodes). Use template that includes `data-testid` attributes.
+1. Add/update tokens in `src/styles/tokens.css` (dark and light). Provide RGB helpers for focus outlines: `--lchaty-accent-rgb: 11,95,255;`.
+2. Create `src/components/LoginCard.ts` (plain TS module that returns an HTML string or DOM nodes). Use template that includes `data-testid` attributes.
 3. Update `main.user.tsx` to import and mount the `LoginCard` instead of inline HTML. Keep fallback behavior intact.
 4. Add CSS rules to `base.css` scoped to `.login-card` for card background, padding, radius, and responsive breakpoints; use tokens for colors.
 5. Add dark mode rules using `.dark` or `prefers-color-scheme`.
-6. Add Playwright smoke test in `frontend/tests/smoke.spec.ts` that loads the login page and asserts the presence of `data-testid` elements and that the H1 is visible.
+6. Add Playwright smoke test in `tests/smoke.spec.ts` that loads the login page and asserts the presence of `data-testid` elements and that the H1 is visible.
 
 Test hooks
 ----------

@@ -3,8 +3,8 @@
 This document defines the automated/manual loop the AI operator (Copilot) must follow until all acceptance gates pass.
 
 Sequence (must follow exactly):
-1) Generate or update the project files described in the central task. Do not modify `./frontend_Back`.
-2) cd ./frontend and install dependencies.
+1) Generate or update the project files described in the central task.
+2) Install dependencies from the repo root (`npm install`).
 3) npm run typecheck — must succeed with exit code 0.
 4) npm run build — must succeed and produce both index.html and admin.html in `dist`.
 5) Start dev server via external terminal (scripts/start-vite.ps1) — server must listen on both required local origins over HTTPS.

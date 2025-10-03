@@ -36,7 +36,7 @@ Use the helper:
 
 4) Environment variables (.env)
 
-Create `./frontend/.env` (example provided in repo). Key entries:
+Create a root `.env` file (example provided in repo). Key entries:
 
 - DEV_CERT_PATH — path to PEM cert (or PFX path if Vite supports it)
 - DEV_KEY_PATH — path to key PEM

@@ -102,7 +102,6 @@ The script will:
 ### Build Verification
 
 ```powershell
-cd frontend
 npm run build
 ```
 

@@ -8,7 +8,6 @@ Run server externally before running tests (see scripts/start-vite.ps1).
 
 Commands
 - Mock run (default):
-  cd frontend
   npm run e2e
 - Live run (hits worker):
   E2E_MODE=LIVE npm run e2e
@@ -22,4 +21,4 @@ Failure triage
 - If tests fail in LIVE: confirm `https://chat-backend.lchaty.com` is reachable and that cookies are being set; check Cloudflare Worker logs.
 
 Artifacts
-- On failure, Playwright will capture traces and screenshots (see playwright.config.ts). Review `frontend/playwright-report` and `frontend/test-results`.
+- On failure, Playwright will capture traces and screenshots (see playwright.config.ts). Review `playwright-report` and `test-results`.

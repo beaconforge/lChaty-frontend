@@ -3,7 +3,7 @@ Design brief — first-pass visual brief for Product Designer
 
 Objective
 ---------
-Create a concise visual brief and 2–3 small mocks that blend the best of the backup UI (`frontend_Back`) and the current minimal shell. The goal is to produce an implementable set of visual decisions (tokens, spacing, and a login + header mock) that the Architect and Developer can convert into code quickly.
+Create a concise visual brief and 2–3 small mocks that blend the best of the backup UI reference and the current minimal shell. The goal is to produce an implementable set of visual decisions (tokens, spacing, and a login + header mock) that the Architect and Developer can convert into code quickly.
 
 Priority
 --------
@@ -15,8 +15,8 @@ Assets available
 ----------------
 - `docs/design/login_current.png` — (current minimal UI screenshot)
 - `docs/design/login_backup.png` — (backup polished UI screenshot)
-- Tokens: `frontend/src/styles/tokens.css` (primary colors and small helpers)
-- Source: `frontend_Back/src/style.css` and `frontend_Back/src/components` (for reference only — do not commit `frontend_Back`)
+- Tokens: `src/styles/tokens.css` (primary colors and small helpers)
+- Source: legacy backup styles (for reference only — do not commit private archives)
 
 Constraints & non-negotiables
 ----------------------------
@@ -41,7 +41,7 @@ Deliverables (what we want back)
    - `docs/design/mock_login_v1.png` (primary proposal)
    - `docs/design/mock_login_alt.png` (one alternative, optional)
 
-4. A short implementation note for the Architect (bullet list) describing token mapping to `frontend/src/styles/tokens.css` and required `data-testid`s for Playwright (header logo, login username, login password, login submit).
+4. A short implementation note for the Architect (bullet list) describing token mapping to `src/styles/tokens.css` and required `data-testid`s for Playwright (header logo, login username, login password, login submit).
 
 Suggested workflow & tools
 --------------------------
