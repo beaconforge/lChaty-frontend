@@ -1,3 +1,5 @@
+import { normalizeAdminUser, RawAdminUser } from '../api/types';
+
 export async function bootstrapAuth() {
   try {
     const response = await fetch('/api/me', {
@@ -8,8 +10,8 @@ export async function bootstrapAuth() {
     });
 
     if (response.ok) {
-      const me = await response.json();
-      return { authenticated: true as const, me };
+      const me = (await response.json()) as RawAdminUser;
+      return { authenticated: true as const, me: normalizeAdminUser(me) };
     }
 
     if (response.status === 401) {

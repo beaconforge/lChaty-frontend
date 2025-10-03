@@ -16,25 +16,6 @@ export default defineConfig(({ mode }) => {
             const host = req.headers.host || '';
             const isAdminSubdomain = host.includes('local.admin.lchaty.com');
 
-            // Dev-only: when DEV_MOCK_ADMIN=1 is set, intercept /api/me and
-            // return a safe mock admin identity to help debugging in local
-            // browsers (avoids requiring a working backend session). This is
-            // intentionally guarded by an environment flag and local host check.
-            try {
-              const devMock = process.env.DEV_MOCK_ADMIN === '1';
-              if (devMock && isAdminSubdomain && req.method === 'GET' && req.url && req.url.startsWith('/api/me')) {
-                const mock = { id: 1, username: 'local-admin', is_admin: true, roles: ['admin'] };
-                res.setHeader('Content-Type', 'application/json');
-                res.setHeader('Cache-Control', 'no-cache');
-                res.end(JSON.stringify(mock));
-                return;
-              }
-            } catch (err) {
-              // swallow errors so middleware doesn't break dev server
-              // eslint-disable-next-line no-console
-              console.warn('dev mock middleware error', err);
-            }
-
             if (isAdminSubdomain && (req.url === '/' || req.url === '/index.html')) {
               req.url = '/admin.html';
             }

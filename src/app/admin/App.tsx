@@ -23,7 +23,7 @@ export function AdminApp() {
 
   return (
     <AppProviders>
-  <BrowserRouter basename={basename}>
+      <BrowserRouter basename={basename}>
         <Routes>
           <Route path="login" element={<LoginPage />} />
           <Route

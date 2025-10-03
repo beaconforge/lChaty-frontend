@@ -110,7 +110,7 @@ class ErrorService {
 - **Accessibility**: Improved ARIA labels and keyboard navigation
 - **Responsive Design**: Mobile-first design with adaptive layouts
 
-### **Enhanced Main Application** (`src/app/user/main.user.ts`)
+### **Enhanced Main Application** (`src/app/user/main.user.tsx`)
 - **Auth Service Integration**: Automatic authentication state checking
 - **Error Boundary Setup**: Global error handling initialization  
 - **Loading State Management**: Application-wide loading coordination
@@ -173,7 +173,7 @@ class ErrorService {
 
 ### **Enhanced Components**  
 - `src/pages/Login.ts` - Fully enhanced with all new services
-- `src/app/user/main.user.ts` - Integrated with enhanced services
+- `src/app/user/main.user.tsx` - Integrated with enhanced services
 
 ### **Configuration Files**
 - `vite.config.ts` - HTTPS and development server configuration

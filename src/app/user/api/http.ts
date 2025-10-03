@@ -1,7 +1,10 @@
 import axios from 'axios';
+import { API_BASE_URL } from '@/config/backend';
+
+const baseURL = API_BASE_URL || 'https://chat-backend.lchaty.com/api';
 
 export const http = axios.create({
-  baseURL: '/api',
+  baseURL,
   withCredentials: true,
 });
 
