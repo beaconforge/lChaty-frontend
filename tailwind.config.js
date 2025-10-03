@@ -44,7 +44,10 @@ export default {
           'accent': '#3b82f6',
           'sidebar': '#f9fafb',
           'border': '#e5e7eb'
-        }
+        },
+        background: 'var(--color-background)',
+        foreground: 'var(--color-foreground)',
+        border: 'var(--color-border)'
       }
     }
   },

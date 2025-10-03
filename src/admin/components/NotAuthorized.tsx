@@ -11,7 +11,10 @@ export function NotAuthorized({ roles }: { roles: string[] }) {
           Your roles: {roles.length ? roles.join(', ') : 'none'}. Contact an administrator to request elevated access.
         </p>
       </div>
-      <Button onClick={() => (window.location.href = '/')}>Return to app</Button>
+      <div className="flex gap-3">
+        <Button onClick={() => (window.location.href = '/')}>Return to app</Button>
+        <Button variant="outline" onClick={() => (window.location.href = '/admin/login')}>Sign in</Button>
+      </div>
     </div>
   );
 }

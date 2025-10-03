@@ -8,7 +8,9 @@ export default defineConfig({
   reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   use: {
     // HTTPS is already configured & trusted; do not bypass SSL:
-    ignoreHTTPSErrors: false,
+    // For local E2E runs we allow ignoring HTTPS errors to avoid requiring
+    // the mkcert root to be installed in the test runner environment.
+    ignoreHTTPSErrors: true,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -22,6 +24,11 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         baseURL: process.env.E2E_USER_BASE_URL || 'https://local.lchaty.com:5173',
+          launchOptions: {
+            // Map the local hostnames to localhost so tests can reach the dev server
+            args: ['--host-resolver-rules=MAP local.lchaty.com 127.0.0.1, MAP local.admin.lchaty.com 127.0.0.1'],
+            channel: 'chrome'
+          },
       },
     },
     {
@@ -29,6 +36,21 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         baseURL: process.env.E2E_ADMIN_BASE_URL || 'https://local.admin.lchaty.com:5173',
+          launchOptions: {
+            args: ['--host-resolver-rules=MAP local.admin.lchaty.com 127.0.0.1, MAP local.lchaty.com 127.0.0.1'],
+            channel: 'chrome'
+          },
+      },
+    },
+    {
+      name: 'adminApp-msedge',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.E2E_ADMIN_BASE_URL || 'https://local.admin.lchaty.com:5173',
+        launchOptions: {
+          args: ['--host-resolver-rules=MAP local.admin.lchaty.com 127.0.0.1, MAP local.lchaty.com 127.0.0.1'],
+          channel: 'msedge'
+        },
       },
     },
     // Add FF/WebKit if you want cross-browser from day 1:
