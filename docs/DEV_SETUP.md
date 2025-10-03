@@ -2,15 +2,9 @@
 
 This document walks through the steps to prepare a Windows machine for local frontend development of lChaty. Follow exactly. Administrative privileges are required for hosts/certs steps.
 
-> IMPORTANT - CERTIFICATE & SECURITY POLICY:
->
-> - Do NOT create, modify, delete, or trust certificates, keys, or the system certificate store unless you have explicit written approval from the project owner.
-> - If certificate changes are required, open an issue and obtain approval before running any scripts that modify trust stores or certificates.
->
-> See `docs/CERT_POLICY_SNIPPET.md` for full policy details.
-
 1) Hosts entries
 
+- Add these entries to `C:\Windows\System32\drivers\etc\hosts`:
 ```
 127.0.0.1   local.lchaty.com
 127.0.0.1   local.admin.lchaty.com

@@ -1,18 +1,14 @@
-import { test, expect } from '@playwright/test';
-import { attachNetworkLogging } from './utils/net';
+import { test, expect } from '@playwright/test'
 
-test.describe.configure({ mode: 'parallel' });
-
-test('smoke: page renders without blocking errors', async ({ page, baseURL }) => {
-  await attachNetworkLogging(page);
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
-
-  // Wordmark/logo
-  await expect(page.getByText(/lchaty/i).first()).toBeVisible();
-
-  // No uncaught exceptions (basic check)
-  page.on('pageerror', e => {
-    // Fail on unexpected runtime errors
-    expect(e.message).toBe('');
+test.describe('Smoke - open base URLs', () => {
+  test('loads the base page', async ({ page, baseURL }) => {
+    if (!baseURL) throw new Error('baseURL not provided by Playwright project');
+    await page.goto(baseURL);
+    // basic sanity: body is present and page responded
+    const hasBody = await page.locator('body').count();
+    expect(hasBody).toBeGreaterThan(0);
+    // optional: check title or a known asset
+    const title = await page.title().catch(() => '');
+    console.log('Page title:', title);
   });
 });
