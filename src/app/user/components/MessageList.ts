@@ -7,6 +7,8 @@ import { ChatMessage } from '@/services/api.user';
 export class MessageList {
   private container: HTMLElement;
   private messages: ChatMessage[] = [];
+  private isLoading = false;
+  private loadingMessage = 'Loading…';
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -14,8 +16,8 @@ export class MessageList {
 
   render(): void {
     this.container.innerHTML = `
-      <div id="messagesScroll" class="h-full overflow-y-auto px-6 py-4">
-        <div id="messagesContainer" class="space-y-4">
+      <div id="messagesScroll" class="h-full overflow-y-auto px-6 py-8">
+        <div id="messagesContainer" class="space-y-6" data-testid="messages-container">
           ${this.messages.length === 0 ? this.renderEmptyState() : ''}
         </div>
       </div>
@@ -26,11 +28,11 @@ export class MessageList {
 
   private renderEmptyState(): string {
     return `
-      <div class="flex items-center justify-center h-full">
-        <div class="text-center">
-          <div class="text-6xl mb-4">💬</div>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Start a conversation</h3>
-          <p class="text-gray-500">Type a message below to get started with AI chat</p>
+      <div class="flex min-h-[280px] items-center justify-center text-slate-200">
+        <div class="w-full max-w-md rounded-3xl border border-white/10 bg-white/5 px-8 py-10 text-center shadow-xl backdrop-blur">
+          <div class="mb-4 text-5xl">💬</div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Start a conversation</h3>
+          <p class="text-sm text-slate-300">Type a message below to begin your next AI session.</p>
         </div>
       </div>
     `;
@@ -38,12 +40,37 @@ export class MessageList {
 
   setMessages(messages: ChatMessage[]): void {
     this.messages = messages;
+    this.isLoading = false;
+    this.updateMessages();
+  }
+
+  showLoading(message: string): void {
+    this.isLoading = true;
+    this.loadingMessage = message;
+    this.updateMessages();
+  }
+
+  hideLoading(): void {
+    if (!this.isLoading) return;
+    this.isLoading = false;
     this.updateMessages();
   }
 
   private updateMessages(): void {
     const container = this.container.querySelector('#messagesContainer') as HTMLElement;
     if (!container) return;
+
+    if (this.isLoading) {
+      container.innerHTML = `
+        <div class="flex h-full min-h-[240px] items-center justify-center text-slate-300">
+          <div class="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm">
+            <span class="h-3 w-3 animate-ping rounded-full bg-blue-400"></span>
+            <span>${this.loadingMessage}</span>
+          </div>
+        </div>
+      `;
+      return;
+    }
 
     if (this.messages.length === 0) {
       container.innerHTML = this.renderEmptyState();
@@ -59,31 +86,26 @@ export class MessageList {
   private renderMessage(message: ChatMessage): string {
     const isUser = message.role === 'user';
     const timestamp = message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : '';
-    
+
     return `
       <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
-        <div class="max-w-2xl ${isUser ? 'order-2' : 'order-1'}">
-          <div class="flex items-center ${isUser ? 'justify-end' : 'justify-start'} mb-1">
-            <span class="text-xs text-gray-500">
-              ${isUser ? 'You' : (message.model ? `AI (${message.model})` : 'AI')}
-              ${timestamp ? ` • ${timestamp}` : ''}
+        <div class="flex max-w-2xl items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}">
+          <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10 text-xs font-semibold uppercase">
+            ${isUser ? 'You' : 'AI'}
+          </div>
+          <div class="flex min-w-[200px] flex-col gap-1 ${isUser ? 'items-end text-right' : 'items-start text-left'}">
+            <span class="text-[11px] uppercase tracking-wide text-slate-400">
+              ${isUser ? 'You' : message.model ? `AI · ${message.model}` : 'AI'}${
+                timestamp ? ` · ${timestamp}` : ''
+              }
             </span>
-          </div>
-          
-          <div class="rounded-lg px-4 py-2 ${
-            isUser 
-              ? 'bg-primary-600 text-white' 
-              : 'bg-gray-100 text-gray-900 border border-gray-200'
-          }">
-            <div class="whitespace-pre-wrap">${this.escapeHtml(message.content)}</div>
-          </div>
-        </div>
-        
-        <div class="${isUser ? 'order-1 mr-3' : 'order-2 ml-3'} flex-shrink-0">
-          <div class="w-8 h-8 rounded-full ${
-            isUser ? 'bg-primary-500' : 'bg-gray-300'
-          } flex items-center justify-center text-white text-sm font-medium">
-            ${isUser ? 'U' : 'AI'}
+            <div class="rounded-2xl px-4 py-3 text-sm shadow-lg ring-1 ring-white/10 ${
+              isUser
+                ? 'bg-blue-600 text-white'
+                : 'bg-white/90 text-slate-900 backdrop-blur'
+            }">
+              <div class="whitespace-pre-wrap leading-relaxed">${this.escapeHtml(message.content)}</div>
+            </div>
           </div>
         </div>
       </div>

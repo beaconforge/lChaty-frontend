@@ -22,14 +22,14 @@ export class ChatComponent {
 
   render(): void {
     this.container.innerHTML = `
-      <div class="flex flex-col h-full">
+      <div class="flex h-full flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100">
         <!-- Messages container -->
         <div id="messageList" class="flex-1 overflow-hidden">
           <!-- Message list component will be rendered here -->
         </div>
-        
+
         <!-- Input container -->
-        <div id="messageInput" class="border-t border-gray-200 bg-white">
+        <div id="messageInput" class="border-t border-slate-800/40 bg-slate-900/80 backdrop-blur">
           <!-- Message input component will be rendered here -->
         </div>
       </div>
@@ -60,6 +60,14 @@ export class ChatComponent {
 
   setModel(model: Model): void {
     this.currentModel = model;
+  }
+
+  focusInput(): void {
+    this.messageInput?.focusInput();
+  }
+
+  showHistoryLoading(message = 'Loading conversation…'): void {
+    this.messageList?.showLoading(message);
   }
 
   private async sendMessage(content: string): Promise<void> {
@@ -122,6 +130,7 @@ export class ChatComponent {
       this.updateMessageList();
     } finally {
       this.setLoading(false);
+      this.container.dispatchEvent(new CustomEvent('chat:message-sent'));
     }
   }
 
@@ -139,11 +148,13 @@ export class ChatComponent {
   // Public methods
   clearChat(): void {
     this.messages = [];
+    this.messageList?.hideLoading();
     this.updateMessageList();
   }
 
   loadConversation(messages: ChatMessage[]): void {
     this.messages = [...messages];
+    this.messageList?.hideLoading();
     this.updateMessageList();
   }
 }

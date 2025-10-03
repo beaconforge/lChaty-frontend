@@ -23,10 +23,11 @@ class UserApp {
   private currentSignup?: Signup;
 
   constructor() {
-    this.container = document.getElementById('app')!;
-    if (!this.container) {
+    const mount = document.getElementById('app-root') || document.getElementById('app');
+    if (!mount) {
       throw new Error('App container not found');
     }
+    this.container = mount;
     
     // Initialize enhanced services
     ThemeManager.init();
