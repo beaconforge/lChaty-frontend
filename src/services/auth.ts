@@ -85,9 +85,12 @@ class AuthService {
       // API returns {user: {...}} but TypeScript expects User directly
       const user = (response as any).user || response;
       
-      // Check if this is an admin user and handle routing
-      const isAdminRoute = window.location.hostname.includes('admin') || window.location.pathname.includes('admin');
-      const isUserAdmin = user.is_admin || user.username === 'admin' || user.username?.toLowerCase().includes('admin');
+  // Check if this is an admin user and handle routing. Trust the backend's
+  // `is_admin` field (which should be derived from the admin_users table)
+  // instead of guessing by username. This keeps frontend logic authoritative
+  // and avoids accidental privilege elevation.
+  const isAdminRoute = window.location.hostname.includes('admin') || window.location.pathname.includes('admin');
+  const isUserAdmin = !!user.is_admin;
       
       console.log('Auth routing debug:', {
         hostname: window.location.hostname,
@@ -103,8 +106,6 @@ class AuthService {
       console.log('User object keys:', Object.keys(user));
       console.log('Admin detection breakdown:', {
         'user.is_admin': user.is_admin,
-        'user.username === "admin"': user.username === 'admin',
-        'user.username?.toLowerCase().includes("admin")': user.username?.toLowerCase().includes('admin'),
         'Final isUserAdmin': isUserAdmin
       });
       

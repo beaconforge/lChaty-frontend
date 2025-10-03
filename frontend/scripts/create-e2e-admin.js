@@ -47,7 +47,34 @@ async function createE2eAdminUser() {
             
             if (!isAdmin) {
               console.log('⚠️ Note: e2e_admin user exists but does not have admin privileges');
-              console.log('   You may need to manually set is_admin=true in the database');
+              // Try to detect local DB admin mapping to help developers
+              try {
+                const sqlite3 = require('sqlite3').verbose();
+                const path = require('path');
+                const repoRoot = path.resolve(__dirname, '..', '..');
+                const dbPath = path.join(repoRoot, 'tmp', 'd1_local.sqlite');
+
+                if (require('fs').existsSync(dbPath)) {
+                  const db = new sqlite3.Database(dbPath);
+                  db.get('SELECT au.role FROM admin_users au JOIN users u ON u.id = au.user_id WHERE u.username = ?', ['e2e_admin'], (err, row) => {
+                    if (err) {
+                      console.warn('Local DB lookup failed:', err.message);
+                    } else if (row) {
+                      console.log('Local DB shows admin role for e2e_admin:', row.role);
+                    } else {
+                      console.log('No local DB admin mapping found for e2e_admin. You can run:');
+                      console.log('  node frontend/scripts/apply-d1-seed.js');
+                      console.log('then re-run this script or manually set admin mapping in DB.');
+                    }
+                    db.close();
+                  });
+                } else {
+                  console.log('Local D1 DB not present at', dbPath);
+                  console.log('To bootstrap a local DB with admin mappings run: node frontend/scripts/apply-d1-seed.js');
+                }
+              } catch (e) {
+                console.warn('Local DB check skipped (sqlite3 not available):', e.message);
+              }
             }
           }
         }

@@ -1,0 +1,6 @@
+name = "lchaty-temp-wrangler"
+
+[[d1_databases]]
+binding = "CHAT_APP_DB"
+database_id = "0f9094f4-927b-42e5-bcf3-62f8a566ead5"
+database_name = "chat-app-db"

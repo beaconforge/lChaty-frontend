@@ -34,14 +34,14 @@ async function checkAdminStatus() {
       if (meRes.status === 200) {
         const userData = await meRes.json();
         console.log('Full user data:', JSON.stringify(userData, null, 2));
-        
+
         const userObj = userData.user || userData;
         console.log('User ID:', userObj.id);
         console.log('Username:', userObj.username);
         console.log('is_admin field:', userObj.is_admin);
         console.log('profile_data:', userObj.profile_data);
-        
-        // Check all possible admin detection methods
+
+        // Check all possible admin detection methods from backend response
         const adminChecks = {
           'is_admin === true': userObj.is_admin === true,
           'is_admin === 1': userObj.is_admin === 1,
@@ -49,12 +49,42 @@ async function checkAdminStatus() {
           'username === admin': userObj.username === 'admin',
           'username includes admin': userObj.username?.toLowerCase().includes('admin')
         };
-        
-        console.log('Admin detection results:');
+
+        console.log('Admin detection results (from /api/me):');
         for (const [method, result] of Object.entries(adminChecks)) {
           console.log(`  ${method}: ${result ? '✅' : '❌'}`);
         }
-        
+
+        // If backend did not indicate admin, check local D1 seed (if present)
+        if (!adminChecks['is_admin truthy']) {
+          try {
+            const sqlite3 = require('sqlite3').verbose();
+            const path = require('path');
+            const repoRoot = path.resolve(__dirname, '..', '..');
+            const dbPath = path.join(repoRoot, 'tmp', 'd1_local.sqlite');
+
+            if (require('fs').existsSync(dbPath)) {
+              const db = new sqlite3.Database(dbPath);
+              await new Promise((resolve, reject) => {
+                db.get('SELECT u.id, u.username, au.role FROM users u JOIN admin_users au ON au.user_id = u.id WHERE u.username = ?', [userObj.username], (err, row) => {
+                  if (err) return reject(err);
+                  if (row) {
+                    console.log(`Local DB admin mapping found: user_id=${row.id}, role=${row.role}`);
+                  } else {
+                    console.log('No local DB admin mapping found for this username');
+                  }
+                  resolve();
+                });
+              });
+              db.close();
+            } else {
+              console.log('Local D1 DB not found at', dbPath);
+            }
+          } catch (e) {
+            console.warn('Local DB check skipped (sqlite3 not available or failed):', e.message);
+          }
+        }
+
       } else {
         console.log(`❌ /api/me failed: ${meRes.status}`);
       }

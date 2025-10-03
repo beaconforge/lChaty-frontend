@@ -72,13 +72,12 @@ class AdminApp {
 
   private async checkAdminAccess(user: any): Promise<void> {
     try {
-      // Check if user has admin access using is_admin field or username-based detection
-      const isAdmin = user.is_admin || user.username === 'admin' || user.username?.toLowerCase().includes('admin');
-      console.log('Admin access check:', {
-        user: user,
+      // Trust the backend-adminship indicator. The backend should determine
+      // admin membership by joining to the `admin_users` table and set
+      // `is_admin` on the returned user payload.
+      const isAdmin = !!user.is_admin;
+      console.log('Admin access check (backend authoritative):', {
         'user.is_admin': user.is_admin,
-        'user.username === "admin"': user.username === 'admin',
-        'user.username?.toLowerCase().includes("admin")': user.username?.toLowerCase().includes('admin'),
         'Final isAdmin': isAdmin
       });
       if (isAdmin) {
