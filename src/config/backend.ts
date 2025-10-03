@@ -22,6 +22,13 @@ export const CHAT_ENDPOINTS = {
   history: '/api/chat/history'
 } as const;
 
+export const FAMILY_ENDPOINTS = {
+  overview: '/api/family',
+  child: (childId: string) => `/api/family/children/${childId}`,
+  requests: '/api/family/requests',
+  request: (requestId: string) => `/api/family/requests/${requestId}`,
+} as const;
+
 export const ADMIN_ENDPOINTS = {
   providers: '/api/admin/providers',
   models: '/api/admin/models',

@@ -32,6 +32,9 @@ export class Sidebar {
           <button id="newChatButton" class="btn-primary w-full" data-testid="sidebar-new-chat">
             New Chat
           </button>
+          <button id="familyHubLink" class="btn-secondary mt-3 w-full" data-testid="sidebar-family-hub">
+            Family hub
+          </button>
         </div>
 
         <!-- Conversation History -->
@@ -75,6 +78,11 @@ export class Sidebar {
     settingsButton?.addEventListener('click', () => {
       this.openSettings();
     });
+
+    const familyHubButton = this.container.querySelector('#familyHubLink');
+    familyHubButton?.addEventListener('click', () => {
+      this.openFamilyHub();
+    });
   }
 
   private startNewChat(): void {
@@ -87,6 +95,13 @@ export class Sidebar {
   private openSettings(): void {
     const event = new CustomEvent('openSettings');
     this.container.dispatchEvent(event);
+
+  }
+
+  private openFamilyHub(): void {
+    const event = new CustomEvent('openFamilyHub');
+    this.container.dispatchEvent(event);
+
   }
 
   // Public methods for future conversation history integration

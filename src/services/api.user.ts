@@ -3,7 +3,7 @@
  */
 
 import { http } from './http';
-import { AUTH_ENDPOINTS, CHAT_ENDPOINTS } from '@/config/backend';
+import { AUTH_ENDPOINTS, CHAT_ENDPOINTS, FAMILY_ENDPOINTS } from '@/config/backend';
 
 export interface User {
   id: string;
@@ -60,6 +60,40 @@ export interface Model {
   max_tokens?: number;
   supports_streaming: boolean;
   available: boolean;
+}
+
+export interface FamilyMember {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+}
+
+export interface FamilyChild extends FamilyMember {
+  safetyLevel?: string;
+  allowanceMinutes?: number;
+  limitMinutes?: number;
+}
+
+export interface FamilySchedule {
+  [day: string]: string;
+}
+
+export interface FamilyRequest {
+  id: string;
+  childId: string;
+  type: string;
+  status: 'pending' | 'approved' | 'denied';
+  createdAt: string;
+  note?: string;
+  payload?: Record<string, unknown>;
+}
+
+export interface FamilyOverview {
+  householdId: string;
+  parents: FamilyMember[];
+  children: FamilyChild[];
+  schedule?: FamilySchedule;
+  requests?: FamilyRequest[];
 }
 
 class UserApiService {
@@ -137,6 +171,125 @@ class UserApiService {
     messages: ChatMessage[];
   }> {
     return http.get(`${CHAT_ENDPOINTS.history}/${conversationId}`);
+  }
+
+  /**
+   * Retrieve family hub overview information
+   */
+  async getFamilyOverview(): Promise<FamilyOverview | null> {
+    const data = await http.get(FAMILY_ENDPOINTS.overview);
+    if (!data) {
+      return null;
+    }
+
+    const householdId = data.householdId ?? data.household_id ?? 'Household';
+
+    const parents: FamilyMember[] = Array.isArray(data.parents)
+      ? data.parents.map((parent: any) => ({
+          id: this.createId(parent.id ?? parent.user_id),
+          name: String(parent.name ?? parent.username ?? 'Unknown parent'),
+          avatarUrl: parent.avatarUrl ?? parent.avatar_url ?? undefined,
+        }))
+      : [];
+
+    const children: FamilyChild[] = Array.isArray(data.children)
+      ? data.children.map((child: any) => ({
+          id: this.createId(child.id ?? child.child_id),
+          name: String(child.name ?? 'Unnamed child'),
+          avatarUrl: child.avatarUrl ?? child.avatar_url ?? undefined,
+          safetyLevel: child.safetyLevel ?? child.safety_level ?? undefined,
+          allowanceMinutes: child.allowanceMinutes ?? child.allowance_minutes ?? undefined,
+          limitMinutes: child.limitMinutes ?? child.limit_minutes ?? undefined,
+        }))
+      : [];
+
+    const schedule: FamilySchedule | undefined = data.schedule
+      ? Object.entries(data.schedule).reduce<FamilySchedule>((acc, [day, value]) => {
+          acc[day] = String(value);
+          return acc;
+        }, {})
+      : undefined;
+
+    const requests: FamilyRequest[] | undefined = Array.isArray(data.requests)
+      ? data.requests.map((request: any) => this.normaliseFamilyRequest(request))
+      : undefined;
+
+    return {
+      householdId,
+      parents,
+      children,
+      schedule,
+      requests,
+    };
+  }
+
+  /**
+   * Fetch pending family requests if available
+   */
+  async getFamilyRequests(): Promise<FamilyRequest[]> {
+    const response = await http.get(FAMILY_ENDPOINTS.requests);
+    const items = Array.isArray(response?.requests) ? response.requests : response;
+    if (!Array.isArray(items)) {
+      return [];
+    }
+    return items.map((item: any) => this.normaliseFamilyRequest(item));
+  }
+
+  /**
+   * Update child settings for the family hub
+   */
+  async updateFamilyChild(
+    childId: string,
+    payload: Partial<{ safetyLevel: string; safety_level: string; allowanceMinutes: number; limitMinutes: number }>,
+  ): Promise<FamilyChild> {
+    const body = {
+      ...payload,
+      safetyLevel: payload.safetyLevel ?? payload.safety_level,
+      safety_level: payload.safety_level ?? payload.safetyLevel,
+    };
+    const data = await http.patch(FAMILY_ENDPOINTS.child(childId), body);
+    return {
+      id: String(data?.id ?? childId),
+      name: String(data?.name ?? 'Child'),
+      avatarUrl: data?.avatarUrl ?? data?.avatar_url ?? undefined,
+      safetyLevel: data?.safetyLevel ?? data?.safety_level ?? body.safetyLevel,
+      allowanceMinutes: data?.allowanceMinutes ?? data?.allowance_minutes ?? undefined,
+      limitMinutes: data?.limitMinutes ?? data?.limit_minutes ?? undefined,
+    };
+  }
+
+  /**
+   * Update status of a pending family request
+   */
+  async updateFamilyRequest(
+    requestId: string,
+    action: 'approve' | 'deny',
+    note?: string,
+  ): Promise<FamilyRequest> {
+    const data = await http.patch(FAMILY_ENDPOINTS.request(requestId), { action, note });
+    return this.normaliseFamilyRequest(data ?? { id: requestId, status: action === 'approve' ? 'approved' : 'denied' });
+  }
+
+  private normaliseFamilyRequest(request: any): FamilyRequest {
+    return {
+      id: this.createId(request?.id),
+      childId: String(request?.childId ?? request?.child_id ?? ''),
+      type: String(request?.type ?? request?.request_type ?? 'request'),
+      status: (request?.status ?? 'pending') as 'pending' | 'approved' | 'denied',
+      createdAt: String(request?.createdAt ?? request?.created_at ?? new Date().toISOString()),
+      note: request?.note ?? undefined,
+      payload: (request?.payload && typeof request.payload === 'object') ? request.payload : undefined,
+    };
+  }
+
+  private createId(value?: unknown): string {
+    if (value !== undefined && value !== null && value !== '') {
+      return String(value);
+    }
+    if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+      return crypto.randomUUID();
+    }
+    return Math.random().toString(36).slice(2);
   }
 }
 

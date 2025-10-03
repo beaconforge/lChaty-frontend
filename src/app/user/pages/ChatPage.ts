@@ -126,6 +126,115 @@ export class ChatPage {
         await this.onLogout();
       }
     });
+
+    const familyHubButton = this.container.querySelector('#familyHubButton');
+    familyHubButton?.addEventListener('click', () => {
+      this.openFamilyHub();
+    });
+  }
+
+  private handleNewChat(): void {
+    this.currentConversationId = undefined;
+    this.updateConversationTitle('New conversation');
+    this.chatComponent?.clearChat();
+    this.chatComponent?.focusInput();
+    this.sidebar?.setActiveConversation(undefined);
+  }
+
+  private async handleConversationSelected(conversationId: string): Promise<void> {
+    if (!this.chatComponent) return;
+
+    this.currentConversationId = conversationId;
+    this.chatComponent.showHistoryLoading('Loading conversation…');
+    loadingService.start('conversation-history');
+    try {
+      const conversation = await userApi.getConversationMessages(conversationId);
+      this.updateConversationTitle(conversation.title || 'Conversation');
+      this.chatComponent.loadConversation(conversation.messages);
+      this.sidebar?.setActiveConversation(conversationId);
+      loadingService.success('conversation-history');
+    } catch (error) {
+      const info = errorService.handleApiError(error, 'conversation-history');
+      loadingService.error('conversation-history', info.message);
+      this.chatComponent.clearChat();
+      this.updateConversationTitle('New conversation');
+    }
+  }
+
+  private updateConversationTitle(title: string): void {
+    const titleElement = this.container.querySelector('#conversationTitle');
+    if (titleElement) {
+      titleElement.textContent = title;
+    }
+  }
+
+  private showSettingsPanel(): void {
+    if (document.getElementById('chat-settings-panel')) {
+      return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'chat-settings-panel';
+    overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur';
+    overlay.innerHTML = `
+      <div class="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900/90 p-6 shadow-2xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-white">Chat preferences</h2>
+            <p class="text-xs text-slate-400">Fine tune your experience for this browser</p>
+          </div>
+          <button data-action="close" class="rounded-full border border-white/10 p-2 text-slate-300 transition hover:border-white hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="mt-6 space-y-4 text-sm text-slate-200">
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-400">Signed in</p>
+            <p class="mt-1 font-medium">${this.user.username}</p>
+          </div>
+
+          <div>
+            <p class="text-xs uppercase tracking-wide text-slate-400">Theme</p>
+            <div class="mt-2 flex gap-2">
+              <button data-theme="light" class="flex-1 rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-slate-900 bg-white transition hover:border-white">Light mode</button>
+              <button data-theme="dark" class="flex-1 rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white bg-slate-800 transition hover:border-white">Dark mode</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    overlay.addEventListener('click', event => {
+      if (event.target === overlay) {
+        overlay.remove();
+      }
+    });
+
+    overlay.querySelector('[data-action="close"]')?.addEventListener('click', () => overlay.remove());
+
+    overlay.querySelectorAll<HTMLButtonElement>('[data-theme]').forEach(button => {
+      button.addEventListener('click', () => {
+        const theme = button.dataset.theme;
+        if (theme === 'light') {
+          ThemeManager.setLight();
+        } else {
+          ThemeManager.setDark();
+        }
+        overlay.remove();
+      });
+    });
+
+    document.body.appendChild(overlay);
+  }
+
+  private openFamilyHub(): void {
+    if (!this.familyHubPanel) {
+      this.familyHubPanel = new FamilyHubPanel(this.user);
+    }
+    this.familyHubPanel.open();
   }
 
   private handleNewChat(): void {
