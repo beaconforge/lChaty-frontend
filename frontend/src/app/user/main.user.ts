@@ -16,6 +16,7 @@ async function renderLogin(mount: HTMLElement) {
         <form id="login" class="space-y-6" data-testid="login-form">
           <div class="space-y-4">
             <div>
+              <label for="username" class="block text-white text-sm mb-2">Username</label>
               <input 
                 id="username" 
                 name="username" 
@@ -45,9 +46,9 @@ async function renderLogin(mount: HTMLElement) {
                 type="checkbox" 
                 class="h-4 w-4 text-blue-600 border-gray-600 rounded bg-gray-800 focus:ring-blue-500"
               />
-              <label for="show-password" class="ml-2 text-sm text-gray-300">
-                Show password
-              </label>
+                <label for="show-password" class="ml-2 text-sm text-gray-300">
+                  Show
+                </label>
             </div>
           </div>
           
@@ -58,7 +59,10 @@ async function renderLogin(mount: HTMLElement) {
           >
             Sign In
           </button>
-        </form>
+          </form>
+
+        <!-- Error message placeholder for E2E tests -->
+        <div id="errorMessage" style="display:none;color:#f87171;margin-top:12px" aria-hidden="true"></div>
 
         <div class="text-center mt-8">
           <p class="text-gray-400 text-sm mb-4">Want to learn more about our beta?</p>
@@ -83,8 +87,16 @@ async function renderLogin(mount: HTMLElement) {
       await login({ username: fd.get('username') as string, password: fd.get('password') as string })
       location.reload()
     } catch (err) {
-      // simple error handling
-      alert('Login failed')
+      // simple error handling: surface a visible error element for E2E tests
+      const errEl = document.getElementById('errorMessage')
+      if (errEl) {
+        errEl.textContent = typeof err === 'string' ? err : (err && (err as any).message) || 'Login failed'
+        errEl.style.display = 'block'
+        errEl.setAttribute('aria-hidden', 'false')
+      } else {
+        // fallback
+        alert('Login failed')
+      }
     }
   })
 
@@ -95,15 +107,7 @@ async function renderLogin(mount: HTMLElement) {
     if (u && p) { u.value = 'demo'; p.value = 'demo' }
   })
 
-  // Show password toggle
-  const showPasswordLabel = document.createElement('label')
-  showPasswordLabel.className = 'inline-flex items-center space-x-2 mt-2'
-  showPasswordLabel.innerHTML = `
-    <input type="checkbox" id="show-password" data-testid="show-password" />
-    <span class="text-sm text-muted">Show password</span>
-  `
-  form.appendChild(showPasswordLabel)
-
+  // Wire up the existing show-password checkbox (avoid duplicate IDs)
   const pwd = document.getElementById('password') as HTMLInputElement | null
   const showToggle = document.getElementById('show-password') as HTMLInputElement | null
   showToggle?.addEventListener('change', () => {
@@ -129,7 +133,27 @@ async function boot() {
   try {
     const me = await getMe()
     if (me) {
-      mount.innerHTML = `<div class="max-w-4xl mx-auto"><h2 class="text-xl font-medium">Hello ${me.displayName || me.username}</h2><p class="text-sm text-slate-500">You are signed in.</p></div>`
+      mount.innerHTML = `
+        <div class="min-h-screen flex items-center justify-center p-8" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+          <div class="max-w-4xl w-full text-center text-white">
+            <div class="mb-6 flex items-center justify-center">
+              <svg width="72" height="72" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <rect width="100" height="100" rx="20" fill="#0f172a" />
+                <text x="50%" y="56%" text-anchor="middle" font-family="Inter, system-ui, -apple-system, 'Segoe UI', Roboto" font-weight="700" font-size="50" fill="#60a5fa">l</text>
+              </svg>
+            </div>
+            <h1 class="text-4xl font-bold mb-2">lchaty</h1>
+            <p class="text-lg text-gray-300 mb-6">Home</p>
+
+            <div class="mt-8 bg-slate-800/60 p-6 rounded-lg inline-block text-left w-full max-w-2xl">
+              <h2 class="text-2xl font-semibold text-white">Hello ${me.displayName || me.username || 'User'}</h2>
+              <p class="text-sm text-slate-400 mt-2">You are signed in.</p>
+            </div>
+
+            <p class="mt-6 text-sm text-slate-400">Beta</p>
+          </div>
+        </div>
+      `
     } else {
       await renderLogin(mount as HTMLElement)
     }

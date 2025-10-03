@@ -8,18 +8,35 @@ import { AdminShell } from './layouts/AdminShell';
 import { adminRoutes } from './routes';
 
 export function AdminApp() {
+  // SECURITY: Ensure admin app only runs on proper admin domains
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isLocalAdmin = hostname.includes('local.admin.lchaty.com');
+    const isProdAdmin = hostname.includes('admin.lchaty.com');
+    const isValidAdminDomain = isLocalAdmin || isProdAdmin || hostname === 'localhost';
+    
+    if (!isValidAdminDomain) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-red-50">
+          <div className="text-center p-6 bg-white rounded-lg shadow-lg border border-red-200">
+            <h1 className="text-2xl font-bold text-red-800 mb-2">Access Denied</h1>
+            <p className="text-red-600">Admin interface can only be accessed from authorized domains.</p>
+          </div>
+        </div>
+      );
+    }
+  }
+
   const [dashboardRoute, ...restRoutes] = adminRoutes;
   const DashboardComponent = dashboardRoute.Component;
-  // If this app is served from the admin subdomain (e.g. local.admin.lchaty.com)
-  // the server serves `admin.html` at the root URL ('/'). In that case we
-  // should use a basename of '/' so <Router> can match the routes. When the
-  // admin UI is mounted under a path (e.g. '/admin' on the main domain) we
-  // keep the legacy basename '/admin'. This makes the admin app resilient in
-  // both local dev (subdomain) and hosted/path-based deployments.
-  const basename =
-    typeof window !== 'undefined' && window.location.hostname.startsWith('local.admin')
-      ? '/'
-      : '/admin';
+  
+  // SECURITY: Admin app should only run on admin subdomain with proper routing
+  // When served from admin subdomain (e.g. local.admin.lchaty.com), use '/' basename
+  // Never use '/admin' basename on the admin subdomain to prevent routing conflicts
+  const isAdminSubdomain = typeof window !== 'undefined' && 
+    window.location.hostname.includes('local.admin.lchaty.com');
+  
+  const basename = isAdminSubdomain ? '/' : '/admin';
 
   return (
     <AppProviders>

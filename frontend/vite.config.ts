@@ -43,7 +43,7 @@ export default defineConfig(({ command, mode }) => {
     server: {
       https,
       port: 5173,
-      host: '0.0.0.0',  // Bind to all interfaces for HTTPS
+      host: '127.0.0.1',  // Bind explicitly to IPv4 loopback so mapped hostnames (127.0.0.1) reach Vite
       strictPort: true,
       proxy: {
         // Ensure the more-specific auth proxy is checked before the generic /api proxy

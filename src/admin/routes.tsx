@@ -71,6 +71,14 @@ export const adminRoutes: AdminRouteConfig[] = [
     sidebar: false,
   },
   {
+    path: 'models',
+    label: 'Models',
+    description: 'LLM provider management and model configuration',
+    icon: 'Bot',
+    Component: lazyPage(() => import('./pages/Models/ModelsPage').then(mod => ({ default: mod.ModelsPage }))),
+    sidebar: true,
+  },
+  {
     path: 'usage',
     label: 'Usage',
     description: 'Aggregated usage reporting and charts',

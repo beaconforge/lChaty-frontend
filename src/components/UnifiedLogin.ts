@@ -61,7 +61,13 @@ export class UnifiedLogin {
           <h1 class="mt-6 text-3xl font-bold text-center">lChaty ${portalType} Portal</h1>
           <p class="mt-2 text-[var(--lchaty-muted)]">${portalDescription}</p>
 
-          <div class="mt-8 w-full max-w-[520px] rounded-xl border border-[var(--lchaty-border)] bg-white/60 dark:bg-white/5 p-6 shadow-sm">
+          <div class="mt-8 w-full max-w-[520px] rounded-xl border border-[var(--lchaty-border)] bg-white/60 dark:bg-white/5 p-6 shadow-sm relative">
+            <!-- Theme toggle -->
+            <div class="absolute top-4 right-4">
+              <button id="themeToggle" class="inline-flex items-center px-3 py-1 rounded-md bg-[var(--lchaty-bg)]/60 text-[var(--lchaty-muted)] hover:bg-[var(--lchaty-bg)]/80">
+                <span id="themeToggleLabel" class="text-sm">Theme</span>
+              </button>
+            </div>
             <form id="loginForm" class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-[var(--lchaty-fg)]">Username</label>
@@ -186,6 +192,29 @@ export class UnifiedLogin {
           this.showError(errorInfo.message);
         }
       });
+    }
+
+    // Theme toggle wiring
+    const themeToggle = this.container.querySelector('#themeToggle') as HTMLButtonElement | null;
+    const themeLabel = this.container.querySelector('#themeToggleLabel') as HTMLElement | null;
+    try {
+      // Lazy-load ThemeManager to avoid import cycles
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { ThemeManager } = require('../lib/theme');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          ThemeManager.toggle();
+          if (themeLabel) {
+            themeLabel.textContent = ThemeManager.isDark() ? 'Dark' : 'Light';
+          }
+        });
+        if (themeLabel) {
+          themeLabel.textContent = require('../lib/theme').ThemeManager.isDark() ? 'Dark' : 'Light';
+        }
+      }
+    } catch (e) {
+      // Non-fatal: theme toggle is a nicety; if it fails, don't break login
+      console.warn('Theme toggle initialization failed', e);
     }
   }
 

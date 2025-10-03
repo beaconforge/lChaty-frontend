@@ -15,6 +15,25 @@ import { bootstrapAuth } from '@/auth/bootstrap';
 
 console.log('Main user app loaded');
 
+// SECURITY: Prevent user app from running on admin domains
+if (typeof window !== 'undefined') {
+  const hostname = window.location.hostname;
+  const isAdminDomain = hostname.includes('admin.lchaty.com') || hostname.includes('local.admin');
+  
+  if (isAdminDomain) {
+    document.body.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #fef2f2;">
+        <div style="text-align: center; padding: 24px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #fecaca;">
+          <h1 style="font-size: 24px; font-weight: bold; color: #991b1b; margin-bottom: 8px;">Access Denied</h1>
+          <p style="color: #dc2626;">User interface cannot be accessed from admin domains.</p>
+          <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">Please use the correct domain.</p>
+        </div>
+      </div>
+    `;
+    throw new Error('User app blocked on admin domain for security');
+  }
+}
+
 class UserApp {
   private container: HTMLElement;
   private currentUser: User | null = null;
@@ -114,23 +133,15 @@ class UserApp {
       this.currentLogin.destroy();
     }
     
-    // Clear container and create header + login
-    this.container.innerHTML = '';
+  // Clear container and render a minimal, centered login (no header)
+  this.container.innerHTML = '';
     
-    // Create header container
-    const headerContainer = document.createElement('div');
-    this.container.appendChild(headerContainer);
-    
-    // Create main content container  
-    const mainContainer = document.createElement('div');
-    this.container.appendChild(mainContainer);
-    
-    // Render header
-    const header = new Header(headerContainer);
-    header.render();
-    
-    // Render enhanced login page
-    this.currentLogin = new UnifiedLogin(mainContainer);
+  // Create main content container
+  const mainContainer = document.createElement('div');
+  this.container.appendChild(mainContainer);
+
+  // Render enhanced login page (UnifiedLogin provides the full centered layout)
+  this.currentLogin = new UnifiedLogin(mainContainer);
     
     // The UnifiedLogin component handles login automatically through auth service
     console.log('Login page rendered with unified login component');

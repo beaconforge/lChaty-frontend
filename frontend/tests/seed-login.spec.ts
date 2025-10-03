@@ -50,7 +50,12 @@ test('seed backend and verify session via storageState', async ({ request, brows
     if (v === undefined) attrMap[k.toLowerCase()] = true; else attrMap[k.toLowerCase()] = v;
   }
 
-  const domain = String(attrMap['domain'] || '.lchaty.com');
+  // Ensure the cookie domain is the shared local test domain so the
+  // Playwright browser context will send the cookie to local.lchaty.com
+  // and local.admin.lchaty.com. Backends often return their own hostname
+  // (chat-backend.lchaty.com) which would create a host-only cookie and
+  // not be sent to our local test hosts. Force a rewrite here.
+  const domain = '.lchaty.com';
   const path = String(attrMap['path'] || '/');
   const maxAge = attrMap['max-age'] ? Number(attrMap['max-age']) : undefined;
   const expires = maxAge ? Math.floor(Date.now() / 1000) + maxAge : -1;

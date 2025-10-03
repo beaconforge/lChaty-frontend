@@ -16,27 +16,27 @@ export default defineConfig(({ mode }) => {
             const host = req.headers.host || '';
             const isAdminSubdomain = host.includes('local.admin.lchaty.com');
 
-            // Dev-only: when DEV_MOCK_ADMIN=1 is set, intercept /api/me and
-            // return a safe mock admin identity to help debugging in local
-            // browsers (avoids requiring a working backend session). This is
-            // intentionally guarded by an environment flag and local host check.
-            try {
-              const devMock = process.env.DEV_MOCK_ADMIN === '1';
-              if (devMock && isAdminSubdomain && req.method === 'GET' && req.url && req.url.startsWith('/api/me')) {
-                const mock = { id: 1, username: 'local-admin', is_admin: true, roles: ['admin'] };
-                res.setHeader('Content-Type', 'application/json');
-                res.setHeader('Cache-Control', 'no-cache');
-                res.end(JSON.stringify(mock));
+            // SECURITY: Complete separation between admin and user interfaces
+            if (isAdminSubdomain) {
+              // Only serve admin.html for admin subdomain
+              if (req.url === '/' || req.url === '/index.html') {
+                req.url = '/admin.html';
+              }
+              // Block any user app resources from being loaded on admin subdomain
+              else if (req.url?.startsWith('/src/app/') || req.url?.startsWith('/src/user/') || req.url === '/index.html') {
+                res.statusCode = 403;
+                res.setHeader('Content-Type', 'text/plain');
+                res.end('Access denied: User resources not available on admin subdomain');
                 return;
               }
-            } catch (err) {
-              // swallow errors so middleware doesn't break dev server
-              // eslint-disable-next-line no-console
-              console.warn('dev mock middleware error', err);
-            }
-
-            if (isAdminSubdomain && (req.url === '/' || req.url === '/index.html')) {
-              req.url = '/admin.html';
+            } else {
+              // On user domain, block admin resources
+              if (req.url?.startsWith('/src/admin/') || req.url === '/admin.html') {
+                res.statusCode = 403;
+                res.setHeader('Content-Type', 'text/plain');
+                res.end('Access denied: Admin resources not available on user domain');
+                return;
+              }
             }
 
             next();
@@ -61,9 +61,30 @@ export default defineConfig(({ mode }) => {
           target: 'https://chat-backend.lchaty.com',
           changeOrigin: true,
           secure: true,
+          // Ensure cookies set by the backend are rewritten so they are visible
+          // to the local test hostnames (local.lchaty.com / local.admin.lchaty.com).
+          // Also rewrite cookie paths to root so they are sent on all proxied requests.
+          cookieDomainRewrite: {
+            // rewrite any backend-set domain to the shared local domain so
+            // Playwright-driven browsers on local.*.lchaty.com receive cookies.
+            '*': '.lchaty.com',
+          },
+          cookiePathRewrite: {
+            '*': '/',
+          },
           configure: proxy => {
-            proxy.on('proxyReq', proxyReq => {
-              proxyReq.setHeader('Origin', env.ADMIN_ORIGIN ?? 'https://local.admin.lchaty.com:5173');
+            // Use the incoming Host header to build a correct Origin for proxied
+            // requests. This avoids always sending an admin origin when the
+            // request actually originates from the user subdomain.
+            proxy.on('proxyReq', (proxyReq, req) => {
+              try {
+                const incomingHost = (req && req.headers && req.headers.host) || '';
+                const origin = incomingHost ? `https://${incomingHost}` : (env.ADMIN_ORIGIN ?? 'https://local.admin.lchaty.com:5173');
+                proxyReq.setHeader('Origin', origin);
+              } catch (e) {
+                // Best-effort: do not break the proxy if header setting fails
+                console.warn('Failed to set proxy Origin header', e);
+              }
             });
           },
         },

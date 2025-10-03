@@ -5,10 +5,7 @@ import './tokens.css';
 import './theme.css';
 
 async function bootstrap() {
-  if (import.meta.env.VITE_USE_MOCKS === 'true') {
-    const { enableMocks } = await import('./api/mocks');
-    enableMocks();
-  }
+  // Note: mocks removed — the app will always use the configured backend.
 
   const container = document.getElementById('admin-root');
   if (!container) {

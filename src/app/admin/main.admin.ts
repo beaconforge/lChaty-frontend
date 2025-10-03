@@ -61,22 +61,8 @@ class AdminApp {
           this.showAccessDenied();
         }
       } else {
-        // Check for session cookie as fallback (for development/testing)
-        const hasSessionCookie = document.cookie.includes('fc_session_v2');
-        if (hasSessionCookie) {
-          console.warn('API authentication failed but session cookie found - assuming admin user for development');
-          // Create a mock admin user for testing
-          const mockUser = { id: 3, username: 'admin', is_admin: true };
-          await this.checkAdminAccess(mockUser);
-          if (this.currentUser) {
-            this.showAdminPortal();
-          } else {
-            this.showAccessDenied();
-          }
-        } else {
-          // Not authenticated, show login form
-          this.showLogin();
-        }
+        // Not authenticated, show login form (no development mock fallbacks)
+        this.showLogin();
       }
     } catch (error) {
       console.error('Failed to initialize admin app:', error);
