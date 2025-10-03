@@ -95,11 +95,13 @@ export class Sidebar {
   private openSettings(): void {
     const event = new CustomEvent('openSettings');
     this.container.dispatchEvent(event);
+
   }
 
   private openFamilyHub(): void {
     const event = new CustomEvent('openFamilyHub');
     this.container.dispatchEvent(event);
+
   }
 
   // Public methods for future conversation history integration
